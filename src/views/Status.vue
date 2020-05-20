@@ -5,21 +5,43 @@
         <el-table
           stripe
           :data="statusData"
+          :v-loading="loading"
           style="width: 100%">
           <el-table-column
-            prop="statusID"
             label="编号">
+            <template slot-scope="scope">
+              <el-button
+                class="status-table-button"
+                type="text"
+                @click="handleClickStatus(scope.row.statusID)">
+                {{ scope.row.statusID }}
+              </el-button>
+            </template>
           </el-table-column>
           <el-table-column
-            prop="statusSubmitProblem"
             label="题目">
+            <template slot-scope="scope">
+              <el-button
+                class="status-table-button"
+                type="text"
+                @click="handleClickProblem(scope.row.statusID)">
+                {{ scope.row.statusID }}
+              </el-button>
+            </template>
           </el-table-column>
           <el-table-column
-            prop="status"
             label="状态">
+            <template slot-scope="scope">
+              <el-button
+                class="status-result-button"
+                :type="changeType(scope.row.result)"
+                @click="handleClickStatus(scope.row.statusID)">
+                {{ scope.row.result }}
+              </el-button>
+            </template>
           </el-table-column>
           <el-table-column
-            prop="runtime"
+            prop="time"
             label="运行时间">
           </el-table-column>
           <el-table-column
@@ -27,12 +49,34 @@
             label="运行内存">
           </el-table-column>
           <el-table-column
-            prop="language"
             label="提交语言">
+            <template slot-scope="scope">
+              <el-button
+                class="status-table-button"
+                type="text"
+                @click="handleClickProblem(scope.row.statusID)">
+                {{ scope.row.language }}
+              </el-button>
+            </template>
           </el-table-column>
           <el-table-column
-            prop="author"
+            prop="length"
+            label="代码长度">
+          </el-table-column>
+          <el-table-column
             label="提交账号">
+            <template slot-scope="scope">
+              <el-button
+                class="status-table-button"
+                type="text"
+                @click="handleClickUser(scope.row.username)">
+                {{ scope.row.username }}
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="subtime"
+            label="提交时间">
           </el-table-column>
         </el-table>
         <div class="status-block">
@@ -57,7 +101,31 @@ export default {
       currentPage: 1,
       pageSize: 40,
       totalStatus: 0,
-      statusData: []
+      statusData: [{
+        status_id: 1,
+        problem_id: 1000,
+        result: 0,
+        time: 0,
+        memory: 0,
+        length: 0,
+        subtime: '',
+        username: '',
+        language: ''
+      }]
+    }
+  },
+  methods: {
+    handleClickStatus(statusID) {
+      console.log(statusID); //实现status跳转，记得看权限
+    },
+    handleClickProblem(problemID) {
+      this.$router.push({ name: 'problembody', params: { problemID: problemID }});
+    },
+    handleClickUser(userID) {
+      console.log(userID); //ID 跳转
+    },
+    changeType(result) {
+      console.log(result);
     }
   }
 }

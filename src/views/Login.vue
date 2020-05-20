@@ -55,7 +55,28 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!');
+          let pass = this.$md5(this.ruleForm.pass);
+          this.$axios
+            .post("", { /* 请求账户信息 */
+              username: this.ruleForm.account,
+              password: pass
+            })
+            .then(response => {
+              // 密码是否错误
+              /* code */
+              this.$message({
+                message: '登录成功',
+                type: 'success'
+              });
+
+              window.sessionStorage.setItem("username", this.ruleForm.account);
+              window.sessionStorage.setItem("userType", response.data.type);
+
+            })
+            .catch(error => {
+              this.$message.error('登录失败:(' + error + ')'); //加原因
+            })
+            /* 考虑拉取其它用户信息，比如rating这类的 */
         } else {
           console.log('error submit!!');
           return false;
