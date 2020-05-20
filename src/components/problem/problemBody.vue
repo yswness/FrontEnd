@@ -183,6 +183,9 @@ export default {
         this.sOutput = response.data.Problem['soutput'];
         this.hint = response.data.Problem['hint'];
         this.problemDes = response.data.Problem['problemdes']; // warning 是否考虑用异步
+      })
+      .catch(error => {
+        this.$message.error('服务器错误(' + error + ')');
       });
   },
   created() {

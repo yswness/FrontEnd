@@ -92,6 +92,9 @@ export default {
           }
           this.problemData = response.data.results;
           //console.log(this.problemData);
+        })
+        .catch(error => {
+          this.$message.error('服务器错误(' + error + ')');
         });
     },
     handleClick(val) {
@@ -130,6 +133,9 @@ export default {
         }
         this.problemData = response.data.results;
         //console.log(this.problemData);
+      })
+      .catch(error => {
+        this.$message.error('服务器错误(' + error + ')');
       });
   }
 }

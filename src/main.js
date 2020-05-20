@@ -29,7 +29,10 @@ requireAll(req);
 /* MathJax */
 import Mathjax from './components/Mathjaxconfig/mathjaxconfig.js'
 Vue.prototype.$MathJax = Mathjax;
-console.log(Vue.prototype.$MathJax);
+
+/* moment */
+import moment from 'moment'
+Vue.prototype.$moment = moment;
 
 /* mockjs 模拟数据 测试完及时删除 */
 import './mockjs';
