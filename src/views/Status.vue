@@ -1,12 +1,14 @@
 <template>
   <div id="status">
     <el-row id="status-row">
-      <el-col id="status-col" :span="14" :offset="5">
+      <el-col id="status-col" :span="16" :offset="4">
         <el-table
           stripe
           :data="statusData"
           :v-loading="loading"
-          style="width: 100%">
+          style="width: 100%"
+          cell-style="text-align: center;"
+          header-cell-style="text-align: center;">
           <el-table-column
             label="编号"
             width="80px">
@@ -28,8 +30,8 @@
                 size="small"
                 class="status-table-button"
                 type="text"
-                @click="handleClickProblem(scope.row.problem_id)">
-                {{ scope.row.problem }}
+                @click="handleClickProblem(scope.row.problem.problem_id)">
+                {{ scope.row.title }}
               </el-button>
             </template>
           </el-table-column>
@@ -104,6 +106,8 @@
   </div>
 </template>
 <script>
+import Constant from '../constants/constants.js'
+
 export default {
   data() {
     return {
@@ -159,15 +163,23 @@ export default {
           '/'
         ) //暂定
         .then(response => {
-          //console.log(response);
+          console.log(response.data);
 
           let length = response.data.results.length;
+          this.totalStatus = length; // 注意这里不应该是length, 应该拉取所有符合的，这里只是为了debug
+          console.log(length);
           for (let i = 0; i < length; i++) {
+            response.data.results[i].title = 
+              response.data.results[i].problem.problem_id + 
+              '.' + response.data.results[i].problem.title
             response.data.results[i].time = response.data.results[i].time + ' ms';
             response.data.results[i].memory = response.data.results[i].memory + ' KB';
+            response.data.results[i].length = response.data.results[i].length + ' B';
+            response.data.results[i].result = Constant.resultMap[response.data.results[i].result];
+            response.data.results[i].subtime = this.$moment(response.data.results[i].subtime).format('YYYY-MM-DD HH:mm:ss');
           }
 
-          this.statusData[0].result = response.data.results;
+          this.statusData = response.data.results;
           console.log(this.statusData[0]);
           /** code something */
         })
