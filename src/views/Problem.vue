@@ -16,7 +16,9 @@
         <el-table
           :data="problemData"
           stripe
-          style="width: 100%">
+          style="width: 100%"
+          :cell-style="cellStyle"
+          :header-cell-style="headerCellStyle">
           <el-table-column
             width="50px"
             ></el-table-column>
@@ -96,6 +98,20 @@ export default {
         .catch(error => {
           this.$message.error('服务器错误(' + error + ')');
         });
+    },
+    cellStyle(val) {
+      if (val.columnIndex != 2)  {
+        return {
+          textAlign: 'center'
+        }
+      }
+    },
+    headerCellStyle(val) {
+      if (val.columnIndex != 2)  {
+        return {
+          textAlign: 'center'
+        }
+      }
     },
     handleClick(val) {
       this.$router.push({ name: 'problembody', params: { problemID: val }})

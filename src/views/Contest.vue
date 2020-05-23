@@ -6,7 +6,9 @@
           stripe
           border
           :data="contestData"
-          style="width: 100%">
+          style="width: 100%"
+          :cell-style="{textAlign:'center'}"
+          :header-cell-style="{textAlign:'center'}">
           <el-table-column
             label="比赛名称">
             <template slot-scope="scope">
@@ -65,7 +67,7 @@ export default {
       totalContest: 1,
       contestData: [{
         contest_id: 0,
-        title: '',
+        title: '测试比赛名称',
         start_time: '',
         create_time: ''
       }],
@@ -87,8 +89,9 @@ export default {
   },
   created() {
     let d = new Date(2020, 5, 30);
-    this.contestData[0].start_time = d.toString();
+    this.contestData[0].start_time = this.$moment(d.toString()).format('YYYY-MM-DD HH:mm:ss');
     this.contestData[0].create_time = '4 hours';
+    this.contestData[0].title = '测试比赛名称';
   }
 }
 </script>

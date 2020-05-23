@@ -1,17 +1,17 @@
 <template>
   <div id="status">
     <el-row id="status-row">
-      <el-col id="status-col" :span="16" :offset="4">
+      <el-col id="status-col" :span="14" :offset="5">
         <el-table
           stripe
           :data="statusData"
           :v-loading="loading"
           style="width: 100%"
-          cell-style="text-align: center;"
-          header-cell-style="text-align: center;">
+          :cell-style="{textAlign:'center'}"
+          :header-cell-style="{textAlign:'center'}">
           <el-table-column
             label="编号"
-            width="80px">
+            width="74px">
             <template slot-scope="scope">
               <el-button
                 size="small"
@@ -50,14 +50,17 @@
           </el-table-column>
           <el-table-column
             prop="time"
-            label="运行时间">
+            label="运行时间"
+            width="90px">
           </el-table-column>
           <el-table-column
             prop="memory"
-            label="运行内存">
+            label="运行内存"
+            width="90px">
           </el-table-column>
           <el-table-column
-            label="提交语言">
+            label="语言"
+            width="70px">
             <template slot-scope="scope">
               <el-button
                 size="small"
@@ -70,10 +73,12 @@
           </el-table-column>
           <el-table-column
             prop="length"
-            label="代码长度">
+            label="代码长度"
+            width="80px">
           </el-table-column>
           <el-table-column
-            label="提交账号">
+            label="提交账号"
+            width="150px">
             <template slot-scope="scope">
               <el-button
                 size="small"
@@ -87,7 +92,7 @@
           <el-table-column
             prop="subtime"
             label="提交时间"
-            width="200px">
+            width="164px">
           </el-table-column>
         </el-table>
         <div class="status-block">
