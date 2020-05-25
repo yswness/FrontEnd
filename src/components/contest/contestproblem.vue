@@ -11,7 +11,7 @@
       </ul>
     </div>
     <el-row id="problembody-row">
-      <el-col :span="12" :offset="6">
+      <el-col>
         <el-card class="problembody-card">
           <div slot="header" class="problembody-card-header">
             <span>Problem Description</span>
@@ -170,6 +170,7 @@ export default {
     }
   },
   mounted() {
+    console.log('mounted');
     this.$axios
       .get(this.$globle.GLOBLE_BASEURL + "/problem/" + this.problemID + "/")
       .then(response => {
@@ -189,9 +190,15 @@ export default {
       });
   },
   created() {
+    console.log('created');
     this.problemID = this.$route.params.problemID;
     require('ip');
-    
+  },
+  updated() {
+    console.log('updated');
+  },
+  destroyed() {
+    console.log('destroyed');
   }
 }
 </script>

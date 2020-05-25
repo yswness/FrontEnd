@@ -2,8 +2,10 @@
  *  
  */
 
- const resultMap = ['Accepted', 'Wrong Answer'];
+ const RESULTMAP = ['Accepted', 'Wrong Answer'];
+ const GLOBLE_BASEURL = process.env.VUE_APP_BASE_URL;
 
  export default {
-   resultMap
+   GLOBLE_BASEURL,
+   RESULTMAP
  }

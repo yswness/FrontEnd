@@ -1,90 +1,61 @@
 <template>
-  <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-    <el-form-item label="密码" prop="pass">
-      <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
-    </el-form-item>
-    <el-form-item label="确认密码" prop="checkPass">
-      <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
-    </el-form-item>
-    <el-form-item label="年龄" prop="age">
-      <el-input v-model.number="ruleForm.age"></el-input>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
-      <el-button @click="resetForm('ruleForm')">重置</el-button>
-    </el-form-item>
-  </el-form>
+<div>
+  <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+    <el-menu-item index="1">处理中心</el-menu-item>
+    <el-submenu index="2">
+      <template slot="title">我的工作台</template>
+      <el-menu-item index="2-1">选项1</el-menu-item>
+      <el-menu-item index="2-2">选项2</el-menu-item>
+      <el-menu-item index="2-3">选项3</el-menu-item>
+      <el-submenu index="2-4">
+        <template slot="title">选项4</template>
+        <el-menu-item index="2-4-1">选项1</el-menu-item>
+        <el-menu-item index="2-4-2">选项2</el-menu-item>
+        <el-menu-item index="2-4-3">选项3</el-menu-item>
+      </el-submenu>
+    </el-submenu>
+    <el-menu-item index="3" disabled>消息中心</el-menu-item>
+    <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>
+  </el-menu>
+  <div class="line"></div>
+  <el-menu
+    :default-active="activeIndex2"
+    class="el-menu-demo"
+    mode="horizontal"
+    @select="handleSelect"
+    background-color="#545c64"
+    text-color="#fff"
+    active-text-color="#ffd04b">
+    <el-menu-item index="1">处理中心</el-menu-item>
+    <el-submenu index="2">
+      <template slot="title">我的工作台</template>
+      <el-menu-item index="2-1">选项1</el-menu-item>
+      <el-menu-item index="2-2">选项2</el-menu-item>
+      <el-menu-item index="2-3">选项3</el-menu-item>
+      <el-submenu index="2-4">
+        <template slot="title">选项4</template>
+        <el-menu-item index="2-4-1">选项1</el-menu-item>
+        <el-menu-item index="2-4-2">选项2</el-menu-item>
+        <el-menu-item index="2-4-3">选项3</el-menu-item>
+      </el-submenu>
+    </el-submenu>
+    <el-menu-item index="3" disabled>消息中心</el-menu-item>
+    <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>
+  </el-menu>
+  </div>
 </template>
+
 <script>
   export default {
     data() {
-      var checkAge = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error('年龄不能为空'));
-        }
-        setTimeout(() => {
-          if (!Number.isInteger(value)) {
-            callback(new Error('请输入数字值'));
-          } else {
-            if (value < 18) {
-              callback(new Error('必须年满18岁'));
-            } else {
-              callback();
-            }
-          }
-        }, 1000);
-      };
-      var validatePass = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请输入密码'));
-        } else {
-          if (this.ruleForm.checkPass !== '') {
-            this.$refs.ruleForm.validateField('checkPass');
-          }
-          callback();
-        }
-      };
-      var validatePass2 = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请再次输入密码'));
-        } else if (value !== this.ruleForm.pass) {
-          callback(new Error('两次输入密码不一致!'));
-        } else {
-          callback();
-        }
-      };
       return {
-        ruleForm: {
-          pass: '',
-          checkPass: '',
-          age: ''
-        },
-        rules: {
-          pass: [
-            { validator: validatePass, trigger: 'blur' }
-          ],
-          checkPass: [
-            { validator: validatePass2, trigger: 'blur' }
-          ],
-          age: [
-            { validator: checkAge, trigger: 'blur' }
-          ]
-        }
+        activeIndex: '1',
+        activeIndex2: '1'
       };
     },
     methods: {
-      submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
+      handleSelect(key, keyPath) {
+        console.log(key, keyPath);
       }
     }
   }

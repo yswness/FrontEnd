@@ -80,6 +80,7 @@ export default {
       this.currentPate = val;
       this.$axios
         .get(
+          this.$globle.GLOBLE_BASEURL +
           "/problemdata/" +
           "?limit=" + this.pageSize +
           "&offset=" + (this.currentPage - 1) * this.pageSize +
@@ -135,12 +136,14 @@ export default {
   created() {
     this.$axios
       .get(
+        this.$globle.GLOBLE_BASEURL +
         "/problemdata/" +
         "?limit=" + this.pageSize +
         "&offset=" + (this.currentPage - 1) * this.pageSize +
         "/"
       )
       .then(response => {
+        console.log(response);
         let problemDataLength = response.data.results.length;
         for (let i = 0; i < problemDataLength; i++) {
           let rate = response.data.results[i].acnum ? 

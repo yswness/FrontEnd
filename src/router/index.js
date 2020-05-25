@@ -22,42 +22,54 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => import(/* webpackChunkName: "mainPage" */ '../views/About.vue')
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
+    component: () => import(/* webpackChunkName: "mainPage" */ '../views/Login.vue')
   },
   {
     path: '/register',
     name: 'Register',
-    component: () => import(/* webpackChunkName: "register" */ '../views/Register.vue')
+    component: () => import(/* webpackChunkName: "mainPage" */ '../views/Register.vue')
   },
   {
     path: '/problem',
     name: 'Problem',
-    component: () => import(/* webpackChunkName: "problem" */ '../views/Problem.vue')
+    component: () => import(/* webpackChunkName: "mainPage" */ '../views/Problem.vue')
   },
   {
-    path: '/problembody/:problemID',
+    path: '/problem/:problemID',
     name: 'problembody',
-    component: () => import(/* webpackChunkName: "problembody" */ '../components/problem/problemBody.vue')
+    component: () => import(/* webpackChunkName: "problem" */ '../components/problem/problemBody.vue')
   },
   {
     path: '/contest',
     name: 'Contest',
-    component: () => import(/* webpackChunkName: "contest" */ '../views/Contest.vue')
+    component: () => import(/* webpackChunkName: "mainPage" */ '../views/Contest.vue')
+  },
+  {
+    path: '/contest/:contestID',
+    name: 'contestSubPage',
+    component: () => import(/* webpackChunkName: "contest" */ '../components/contest/contestSubPage.vue'),
+    children: [
+      {
+        path: '',
+        name: 'contestproblem',
+        component: () => import(/* webpackChunkName: "contest" */ '../components/contest/contestproblem.vue')
+      }
+    ]
   },
   {
     path: '/status',
     name: 'Status',
-    component: () => import(/* webpackChunkName: "status" */ '../views/Status.vue')
+    component: () => import(/* webpackChunkName: "mainPage" */ '../views/Status.vue')
   },
   {
     path: '/rating',
     name: 'Rating',
-    component: () => import(/* webpackChunkName: "rating" */ '../views/Rating.vue')
+    component: () => import(/* webpackChunkName: "mainPage" */ '../views/Rating.vue')
   }
 ]
 

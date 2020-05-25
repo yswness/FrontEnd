@@ -3,6 +3,9 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+import Constant from './constants/constants.js'
+Vue.prototype.$globle = Constant;
+
 /* ElementUI */
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -14,9 +17,11 @@ Vue.prototype.$md5 = md5;
 
 /* axios */
 import axios from 'axios';
-Vue.prototype.$axios = axios;
+
 axios.default.withCredentials = true;
-axios.default.baseURL = process.env.BASE_URL;
+//axios.default.baseURL = process.env.VUE_APP_BASE_URL;
+Vue.prototype.$axios = axios;
+//
 
 /* svg */
 import IconSvg from '@/components/SvgIcon/svgicon.vue';

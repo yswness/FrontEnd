@@ -81,7 +81,7 @@ export default {
 
     },
     handleClickTitle(val) {
-      this.$router.push({ name: 'contestbody', params: { contest_id: val }})
+      this.$router.push({ name: 'contestSubPage', params: { contestID: val }})
     },
     handleClickRegister(val) {
       console.log(val);
@@ -89,8 +89,9 @@ export default {
   },
   created() {
     let d = new Date(2020, 5, 30);
-    this.contestData[0].start_time = this.$moment(d.toString()).format('YYYY-MM-DD HH:mm:ss');
+    this.contestData[0].start_time = this.$moment(d).format('YYYY-MM-DD HH:mm:ss');
     this.contestData[0].create_time = '4 hours';
+    this.contestData[0].contest_id = 1;
     this.contestData[0].title = '测试比赛名称';
   }
 }

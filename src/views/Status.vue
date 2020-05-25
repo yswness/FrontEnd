@@ -111,7 +111,6 @@
   </div>
 </template>
 <script>
-import Constant from '../constants/constants.js'
 
 export default {
   data() {
@@ -119,20 +118,20 @@ export default {
       loading: false,
       currentPage: 1,
       pageSize: 40,
-      totalStatus: 1,
+      totalStatus: 0,
       statusData: [{
-        id: 1,
+        id: 0,
         problem: {
           problem_id: '',
           title: ''
         },
-        result: 'Accepted',
+        result: '',
         time: 0,
         memory: 0,
         length: 0,
         subtime: '',
-        username: 'yswness',
-        language: 'C++',
+        username: '',
+        language: '',
         testcase: ''
       }]
     }
@@ -157,11 +156,13 @@ export default {
     },
     handleCurrentChange(val) {
       console.log(val);
+      this.currentPage = val;
     },
 
     getStatusData() {
       this.$axios
         .get(
+          this.$globle.GLOBLE_BASEURL +
           '/judgestatus/' +
           '?limit=' + this.pageSize +
           '&offset=' + (this.currentPage - 1) * this.pageSize +
@@ -174,13 +175,13 @@ export default {
           this.totalStatus = length; // 注意这里不应该是length, 应该拉取所有符合的，这里只是为了debug
           console.log(length);
           for (let i = 0; i < length; i++) {
-            response.data.results[i].title = 
+            response.data.results[i].title =
               response.data.results[i].problem.problem_id + 
-              '.' + response.data.results[i].problem.title
+              '. ' + response.data.results[i].problem.title
             response.data.results[i].time = response.data.results[i].time + ' ms';
             response.data.results[i].memory = response.data.results[i].memory + ' KB';
             response.data.results[i].length = response.data.results[i].length + ' B';
-            response.data.results[i].result = Constant.resultMap[response.data.results[i].result];
+            response.data.results[i].result = this.$globle.RESULTMAP[response.data.results[i].result];
             response.data.results[i].subtime = this.$moment(response.data.results[i].subtime).format('YYYY-MM-DD HH:mm:ss');
           }
 
@@ -194,7 +195,7 @@ export default {
     }
   },
   created() {
-    //this.getStatusData(); //不管3721先抓一次数据
+    this.getStatusData(); //不管3721先抓一次数据
 
     let that = this;
     this.$store.state.flusher = setInterval(() => {
