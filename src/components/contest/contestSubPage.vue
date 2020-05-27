@@ -1,51 +1,63 @@
 <template>
   <div id="contestsub">
     <el-row>
-      <el-col :span="12" :offset="6">
-        <el-card>
+      <el-col :span="16" :offset="4">
+        <!--<el-card>-->
           <el-menu
             class="contestsub-menu"
             :default-active="activeIndex"
             mode="horizontal"
             @select="handleSelect">
             <el-menu-item index="1">
-              <a href="/contest/:contestID/problem">比赛题目</a>
+              <router-link :to="{ name: 'contestsubpage'}">
+                <div class="li-block">比赛题目</div>
+              </router-link>
             </el-menu-item>
             <el-menu-item index="2">
-              <a href="/contest/:contestID/">比赛题目</a>
+              <router-link :to="{ name: 'mysubmission'}">
+                <div class="li-block">我的提交</div>
+              </router-link>
             </el-menu-item>
             <el-menu-item index="3">
-              <a href="/contest/:contestID/problem">比赛题目</a>
+              <router-link :to="{ name: 'submission'}">
+                <div class="li-block">所有提交</div>
+              </router-link>
             </el-menu-item>
             <el-menu-item index="4">
-              <a href="/contest/:contestID/problem">比赛题目</a>
+              <router-link :to="{ name: 'rank'}">
+                <div class="li-block">比赛排行</div>
+              </router-link>
             </el-menu-item>
           </el-menu>
-        </el-card>
+          
+        <!--</el-card>-->
       </el-col>
     </el-row>
+    <router-view/>
   </div>
 </template>
 <script>
-//import contestproblem from './contestproblem'
-//import contestproblemlist from './contestproblemlist'
 
 export default {
-  components: {
-    //contestproblem,
-    //contestproblemlist
-  },
   data() {
     return {
-      activeIndex: '1'
+      activeIndex: '1',
+      contestID: 0
     }
   },
   methods: {
-    clickTab(tab) {
-      console.log(tab);
-    },
-    handleSelect() {
-
+    handleSelect(val) {
+      console.log(val);
+    }
+  },
+  created() {
+    console.log(this.$route);
+    this.contestID = this.$route.params.contestID;
+    switch (this.$route.name) {
+      case 'contestsubpage': this.activeIndex = '1'; break;
+      case 'mysubmission':   this.activeIndex = '2'; break;
+      case 'submission':     this.activeIndex = '3'; break;
+      case 'rank':           this.activeIndex = '4'; break;
     }
   }
 }
@@ -57,6 +69,13 @@ export default {
 }
 .contestsub-menu a {
   text-decoration: none;
+}
+.contestsub-menu .li-block {
+  width: 78px;
+  text-align: center;
+}
+.contestsub-menu .el-menu-item {
+  padding: 0;
 }
 /* .contestsub-tabs {
 } */

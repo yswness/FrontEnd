@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <el-row>
-      <el-col class="app-col" :span="14" :offset="6">
+      <el-col class="app-col" :span="16" :offset="4">
         <el-menu
           :default-active=activeIndex
           :router="true"

@@ -81,7 +81,7 @@ export default {
 
     },
     handleClickTitle(val) {
-      this.$router.push({ name: 'contestSubPage', params: { contestID: val }})
+      this.$router.push({ name: 'contestsubpage', params: { contestID: val }})
     },
     handleClickRegister(val) {
       console.log(val);

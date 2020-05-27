@@ -52,7 +52,7 @@
             prop="acrate"
             label="通过率"
             width="70px">
-            </el-table-column>
+          </el-table-column>
         </el-table>
         <div class="problem-block">
           <el-pagination

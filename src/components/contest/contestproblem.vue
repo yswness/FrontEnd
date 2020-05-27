@@ -11,7 +11,7 @@
       </ul>
     </div>
     <el-row id="problembody-row">
-      <el-col>
+      <el-col :span="14" :offset="5">
         <el-card class="problembody-card">
           <div slot="header" class="problembody-card-header">
             <span>Problem Description</span>
@@ -191,7 +191,7 @@ export default {
   },
   created() {
     console.log('created');
-    this.problemID = this.$route.params.problemID;
+    this.problemID = this.$route.params.problemKey;
     require('ip');
   },
   updated() {

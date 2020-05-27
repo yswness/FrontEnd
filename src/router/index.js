@@ -51,13 +51,32 @@ const routes = [
   },
   {
     path: '/contest/:contestID',
-    name: 'contestSubPage',
     component: () => import(/* webpackChunkName: "contest" */ '../components/contest/contestSubPage.vue'),
     children: [
       {
         path: '',
+        name: 'contestsubpage',
+        component: () => import(/* webpackChunkName: "contest" */ '../components/contest/contestproblemlist.vue')
+      },
+      {
+        path: 'problem/:problemKey',
         name: 'contestproblem',
         component: () => import(/* webpackChunkName: "contest" */ '../components/contest/contestproblem.vue')
+      },
+      {
+        path: 'my',
+        name: 'mysubmission',
+        component: () => import(/* webpackChunkName: "contest" */ '../components/contest/contestmysubmission.vue')
+      },
+      {
+        path: 'submission',
+        name: 'submission',
+        component: () => import(/* webpackChunkName: "contest" */ '../components/contest/contestsubmission.vue')
+      },
+      {
+        path: 'rank',
+        name: 'rank',
+        component: () => import(/* webpackChunkName: "contest" */ '../components/contest/contestrank.vue')
       }
     ]
   },
