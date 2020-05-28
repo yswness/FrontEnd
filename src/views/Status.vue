@@ -5,7 +5,7 @@
         <el-table
           stripe
           :data="statusData"
-          :v-loading="loading"
+          v-loading="loading"
           style="width: 100%"
           :cell-style="{textAlign:'center'}"
           :header-cell-style="{textAlign:'center'}">
@@ -36,7 +36,9 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="状态">
+            label="状态"
+            :filters="resultsFilter"
+            :filter-method="filterResult">
             <template slot-scope="scope">
               <el-button
                 plain
@@ -44,6 +46,7 @@
                 class="status-result-button"
                 :type="changeType(scope.row.result)"
                 @click="handleClickStatus(scope.row.id)">
+                <i v-if="hasLoading(scope.row.result)" class="el-icon-loading"></i>
                 {{ scope.row.result }}
               </el-button>
             </template>
@@ -115,7 +118,7 @@
 export default {
   data() {
     return {
-      loading: false,
+      loading: true,
       currentPage: 1,
       pageSize: 40,
       totalStatus: 0,
@@ -133,33 +136,44 @@ export default {
         username: '',
         language: '',
         testcase: ''
-      }]
+      }],
+      resultsFilter: this.$globle.RESULTFILTER
     }
   },
   methods: {
     handleClickStatus(statusID) {
-      console.log(statusID); //实现status跳转，记得看权限
+      this.$router.push({ name: 'globlesubmission', params: { submissionID: statusID }});
     },
     handleClickProblem(problemID) {
-      this.$router.push({ name: 'problembody', params: { problemID: problemID }});
+      this.$router.push({ name: 'problembody', params: { problemID }});
     },
     handleClickUser(userID) {
-      console.log(userID); //ID 跳转 ,上面这三个本来可以简化，但为了莫忘了都写上了
+      this.$router.push({ name: 'User', params: { userID } })
     },
     changeType(result) {
-      console.log(result);
-      if (result === 'Accepted') return 'success';
-      else if (result === 'Wrong Answer') return 'danger'
+      //console.log(result);
+      return this.$globle.RESULTBUTTONTYPE[result];
     },
     handleSizeChange(val) {
       console.log(val);
     },
     handleCurrentChange(val) {
-      console.log(val);
+      //console.log(val);
       this.currentPage = val;
+      this.getStatusData();
+    },
+    hasLoading(result) {
+      if (result === 'Pending' || 
+          result === 'Waiting'  || 
+          result === 'Judging') return true;
+      return false;
+    },
+    filterResult(value, row) {
+      return value === row.result;
     },
 
     getStatusData() {
+      this.loading = true;
       this.$axios
         .get(
           this.$globle.GLOBLE_BASEURL +
@@ -169,11 +183,9 @@ export default {
           '/'
         ) //暂定
         .then(response => {
-          console.log(response.data);
 
           let length = response.data.results.length;
           this.totalStatus = length; // 注意这里不应该是length, 应该拉取所有符合的，这里只是为了debug
-          console.log(length);
           for (let i = 0; i < length; i++) {
             response.data.results[i].title =
               response.data.results[i].problem.problem_id + 
@@ -184,14 +196,18 @@ export default {
             response.data.results[i].result = this.$globle.RESULTMAP[response.data.results[i].result];
             response.data.results[i].subtime = this.$moment(response.data.results[i].subtime).format('YYYY-MM-DD HH:mm:ss');
           }
-
+          this.loading = false;
           this.statusData = response.data.results;
-          console.log(this.statusData[0]);
+
+          //console.log(this.statusData[0]);
           /** code something */
         })
         .catch(error => {
           this.$message.error('服务器错误(' + error + ')');
+          this.loading = false;
         });
+      
+      
     }
   },
   created() {

@@ -14,9 +14,9 @@
           <el-menu-item index="/">HOME</el-menu-item>
           <el-menu-item index="/contest">CONTEST</el-menu-item>
           <el-menu-item index="/problem">PROBLEM</el-menu-item>
-          <el-menu-item index="/status">STATUS</el-menu-item>
+          <el-menu-item index="/submission">STATUS</el-menu-item>
           <el-menu-item index="/rating">RATING</el-menu-item>
-          <template v-if="!hasLogin">
+          <template v-if="!userName">
             <el-button 
               id="app-button-demo"
               @click="clickRegister"
@@ -37,9 +37,11 @@
               @command="handleCommand"
               trigger="click">
               <span class="app-dropdown-span-demo">
-                {{ this.$store.state.userName }}<i class="el-icon-arrow-down el-icon--right"></i>
+                {{ userName }}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="userDetail">用户信息</el-dropdown-item>
+                <el-dropdown-item command="setting">用户设置</el-dropdown-item>
                 <el-dropdown-item command="logout">Logout</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -56,9 +58,11 @@ export default {
   data() {
     return {
       activeIndex: "1",
-      userName: this.$store.state.userName,
-      hasLogin: this.$store.state.userName
+      userName: ''
     }
+  },
+  created() {
+    this.userName = window.sessionStorage.getItem('userName');
   },
   methods: {
     handleSelect(key, keyIndex) {
@@ -70,9 +74,18 @@ export default {
     clickRegister() {
       this.$router.push({ name: 'Register' });
     },
-    handleCommand() {
-      this.$store.commit('logout');
-      this.$router.go(0);
+    handleCommand(cmd) {
+      if (cmd === 'logout') {
+        window.sessionStorage.removeItem('userName');
+        this.$router.go(0);
+      } else
+      if (cmd === 'userDetail') {
+        console.log('hi');
+        this.$router.push({ name: 'User', params: { userID: this.userName }});
+      } else
+      if (cmd === 'setting') {
+        //this.$router.push({ path: `/user/${this.userName}/setting`});
+      }
     }
   }
 }

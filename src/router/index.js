@@ -41,8 +41,24 @@ const routes = [
   },
   {
     path: '/problem/:problemID',
-    name: 'problembody',
-    component: () => import(/* webpackChunkName: "problem" */ '../components/problem/problemBody.vue')
+    component: () => import(/* webpackChunkName: "problem" */ '../components/problem/problemdetail.vue'),
+    children: [
+      {
+        path: '',
+        name: 'problembody',
+        component: () => import(/* webpackChunkName: "problem" */ '../components/problem/problemBody.vue')
+      },
+      {
+        path: 'my',
+        name: 'problemmysubmission',
+        component: () => import(/* webpackChunkName: "problem" */ '../components/problem/problemmysubmission.vue')
+      },
+      {
+        path: 'statistics',
+        name: 'problemstatistics',
+        component: () => import(/* webpackChunkName: "problem" */ '../components/problem/problemstatistics.vue')
+      }
+    ]
   },
   {
     path: '/contest',
@@ -81,14 +97,24 @@ const routes = [
     ]
   },
   {
-    path: '/status',
+    path: '/submission',
     name: 'Status',
     component: () => import(/* webpackChunkName: "mainPage" */ '../views/Status.vue')
+  },
+  {
+    path: '/submission/:submissionID',
+    name: 'globlesubmission',
+    component: () => import(/* webpackChunkName: "mainPage" */ '../components/status/submission.vue')
   },
   {
     path: '/rating',
     name: 'Rating',
     component: () => import(/* webpackChunkName: "mainPage" */ '../views/Rating.vue')
+  },
+  {
+    path: '/profile/:userID',
+    name: 'User',
+    component: () => import(/* webpackChunkName: "mainPage" */ '../views/Userprofile.vue')
   }
 ]
 

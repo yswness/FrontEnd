@@ -17,7 +17,6 @@ Vue.prototype.$md5 = md5;
 
 /* axios */
 import axios from 'axios';
-
 axios.default.withCredentials = true;
 //axios.default.baseURL = process.env.VUE_APP_BASE_URL;
 Vue.prototype.$axios = axios;
@@ -28,7 +27,7 @@ import IconSvg from '@/components/SvgIcon/svgicon.vue';
 Vue.component('svg-icon', IconSvg);
 
 const requireAll = requireContext => requireContext.keys().map(requireContext);
-const req = require.context('./assets/icons', false, /\.svg$/);
+const req = require.context('./icons', false, /\.svg$/);
 requireAll(req);
 
 /* MathJax */

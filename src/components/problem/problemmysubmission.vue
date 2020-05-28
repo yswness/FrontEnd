@@ -1,5 +1,5 @@
 <template>
-  <div id="contestmysubmission">
+  <div id="problemmysubmission">
     <el-row>
       <el-col :span="16" :offset="4">
         <div style="text-align: center; margin: 30px;font-weight: bold;font-size: 26px">我的提交</div>

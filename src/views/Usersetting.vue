@@ -16,7 +16,7 @@
           <el-input v-model="ruleForm.account"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pass">
-          <el-input type="password" v-model="ruleForm.pass" autocomplete="off" show-password></el-input>
+          <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item class="login-form-item">
           <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>

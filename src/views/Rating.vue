@@ -5,15 +5,19 @@
         <el-table
           :data="ratingData"
           stripe
-          style="width: 100%">
+          style="width: 100%"
+          :cell-style="cellStyle"
+          :header-cell-style="headerCellStyle">
           <el-table-column
             prop="rank"
             label="#"
             width="50px">
           </el-table-column>
           <el-table-column
-            prop="userName"
             label="用户ID">
+            <template slot-scope="scope">
+              <span :style="scope.row.style"> {{ scope.row.userName }} </span>
+            </template>
           </el-table-column>
           <el-table-column
             prop="contestNum"
@@ -21,15 +25,16 @@
             width="80px">
           </el-table-column>
           <el-table-column
-            prop="rating"
             label="Rating"
             width="80px">
+            <template slot-scope="scope">
+              <span :style="scope.row.style"> {{ scope.row.rating }} </span>
+            </template>
           </el-table-column>
         </el-table>
         <div class="rating-block">
           <el-pagination
             background
-            @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
             :page-size="pageSize"
@@ -48,16 +53,40 @@ export default {
       currentPage: 1,
       pageSize: 40,
       totalUser: 0,
-      ratingData: []
+      ratingData: [{
+        rank: 1,
+        userName: 'yswness',
+        contestNum: 5,
+        rating: 1990,
+        style: {
+          'font-weight': 'bold',
+          'font-size': '14px',
+          'color': 'blue'
+        }
+      }]
     }
   },
-  method: {
+  methods: {
     handleCurrentChange() {
 
     },
-    handleSizeChange() {
-
+    cellStyle(val) {
+      if (val.columnIndex != 1)  {
+        return {
+          textAlign: 'center'
+        }
+      }
+    },
+    headerCellStyle(val) {
+      if (val.columnIndex != 1)  {
+        return {
+          textAlign: 'center'
+        }
+      }
     }
+  },
+  created() {
+    this.styleObj.color = 'red';
   }
 }
 </script>
