@@ -115,6 +115,22 @@ const routes = [
     path: '/profile/:userID',
     name: 'User',
     component: () => import(/* webpackChunkName: "mainPage" */ '../views/Userprofile.vue')
+  },
+  {
+    path: '/admin',
+    component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/adminpage.vue'),
+    children: [
+      {
+        path: '',
+        name: 'adminaddproblem',
+        component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/adminaddproblem.vue')
+      },
+      {
+        path: 'addcontest',
+        name: 'adminaddcontest',
+        component: () => import(/* webpackChunkName: "mainPage" */ '../components/Admin/adminaddcontest.vue')
+      }
+    ]
   }
 ]
 

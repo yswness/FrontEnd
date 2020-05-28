@@ -39,11 +39,21 @@
               <span class="app-dropdown-span-demo">
                 {{ userName }}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="userDetail">用户信息</el-dropdown-item>
-                <el-dropdown-item command="setting">用户设置</el-dropdown-item>
-                <el-dropdown-item command="logout">Logout</el-dropdown-item>
-              </el-dropdown-menu>
+              <template v-if="isAdmin">
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="userDetail">用户信息</el-dropdown-item>
+                  <el-dropdown-item command="setting">用户设置</el-dropdown-item>
+                  <el-dropdown-item command="admin">admin</el-dropdown-item>
+                  <el-dropdown-item command="logout">Logout</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+              <template v-else>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="userDetail">用户信息</el-dropdown-item>
+                  <el-dropdown-item command="setting">用户设置</el-dropdown-item>
+                  <el-dropdown-item command="logout">Logout</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
             </el-dropdown>
           </template>
         </el-menu>
@@ -58,11 +68,10 @@ export default {
   data() {
     return {
       activeIndex: "1",
-      userName: ''
+      userName: window.sessionStorage.getItem('userName'),
+      isAdmin: (window.sessionStorage.getItem('userType') === 'Admin' ||
+                window.sessionStorage.getItem('userType') === 'Super Admin')
     }
-  },
-  created() {
-    this.userName = window.sessionStorage.getItem('userName');
   },
   methods: {
     handleSelect(key, keyIndex) {
@@ -77,6 +86,7 @@ export default {
     handleCommand(cmd) {
       if (cmd === 'logout') {
         window.sessionStorage.removeItem('userName');
+        window.sessionStorage.removeItem('userType');
         this.$router.go(0);
       } else
       if (cmd === 'userDetail') {
@@ -85,7 +95,12 @@ export default {
       } else
       if (cmd === 'setting') {
         //this.$router.push({ path: `/user/${this.userName}/setting`});
+      } else
+      if (cmd === 'admin') {
+        this.$router.push({ name: 'adminaddproblem' });
       }
+    },
+    created() {
     }
   }
 }

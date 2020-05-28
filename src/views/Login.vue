@@ -66,7 +66,10 @@ export default {
         if (valid) {
 
           /* test */
-          window.sessionStorage.setItem("userName", "yswness");
+          window.sessionStorage.setItem("userName", this.ruleForm.account);
+          if (this.ruleForm.account === 'yswness') {
+            window.sessionStorage.setItem("userType", 'Admin');
+          }
           setTimeout(() => { this.$router.go(0) });
           this.$router.push({ name: 'Home' });
           /* end */
