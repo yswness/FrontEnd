@@ -47,6 +47,9 @@ Vue.config.debug = true;
 
 Vue.config.productionTip = false;
 
+console.log('test');
+
+
 new Vue({
   router,
   store,

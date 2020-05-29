@@ -117,6 +117,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "mainPage" */ '../views/Userprofile.vue')
   },
   {
+    path: '/setting',
+    name: 'Setting',
+    component: () => import(/* webpackChunkName: "mainPage" */ '../views/Usersetting.vue')
+  },
+  {
     path: '/admin',
     component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/adminpage.vue'),
     children: [
@@ -137,6 +142,18 @@ const routes = [
 const router = new VueRouter({
   mode: 'history',
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (  to.name !== 'Home' &&
+        to.name !== 'Register' &&
+        to.name !== 'Login' &&
+        to.name !== 'Problem' &&
+        to.name !== 'Rating' &&
+        to.name !== 'Contest' &&
+        (!window.sessionStorage.getItem('userName')) &&
+        (window.sessionStorage.getItem('userName') !== '') ) next({ name: 'Login' });
+  else next();
 })
 
 export default router

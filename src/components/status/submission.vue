@@ -31,7 +31,7 @@ export default {
   },
   data() {
     return {
-      code: `Oh shit`,
+      code: `The code`,
       cmOptions: {
         // codemirror options
         tabSize: 2,

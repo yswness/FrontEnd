@@ -4,12 +4,25 @@
       <div slot="header" class="clearfix">
         <span>Register in XTUOJ</span>
       </div>
-      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="register-ruleForm" status-icon>
+      <el-form 
+        :model="ruleForm" 
+        :rules="rules" 
+        ref="ruleForm" 
+        label-width="100px" 
+        class="register-ruleForm" 
+        @keyup.native.enter="submitForm('ruleForm')"
+        status-icon>
         <el-form-item label="账户" prop="username">
           <el-input v-model="ruleForm.username" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="昵称" prop="name">
           <el-input v-model="ruleForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="班级" prop="classes">
+          <el-input v-model="ruleForm.classes" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="学号" prop="number">
+          <el-input v-model="ruleForm.number" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input type="password" v-model="ruleForm.password" autocomplete="off" show-password></el-input>
@@ -68,11 +81,11 @@ export default {
         name: '',
         password: '',
         passCheck: '',
-        email: ''
-        // school: '', // The Dic has not it
-        // classed: '',
-        // studentID: '',
-        // qq: '',        
+        email: '',
+        school: '', // The Dic has not it
+        classes: '',
+        number: '',
+        qq: '',        
       },
       rules: {
         username: [
@@ -82,6 +95,14 @@ export default {
         ],
         name: [
           { required: true, message: '请输入昵称', trigger: 'blur' },
+          { min: 1, max: 64, message: '长度应在 1 到 64 之间', trigger: 'blur' }
+        ],
+        classes: [
+          { required: true, message: '请输入班级', trigger: 'blur' },
+          { min: 1, max: 64, message: '长度应在 1 到 64 之间', trigger: 'blur' }
+        ],
+        number: [
+          { required: true, message: '请输入学号', trigger: 'blur' },
           { min: 1, max: 64, message: '长度应在 1 到 64 之间', trigger: 'blur' }
         ],
         password: [
@@ -102,7 +123,24 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!');
+          this.$axios
+            .post( this.$globle.GLOBLE_BASEURL + '/register/', this.ruleForm)
+            .then( response => {
+              console.log(response);
+              if (response.data === 'The username already exists!') {
+                this.$message.error('用户名已存在, 请重新输入用户名');
+                return;
+              }
+              this.$message({
+                message: '注册成功',
+                type: 'success'
+              });
+              setTimeout(() => { this.$router.go(0);}, 500);
+              this.$router.push({ name: 'Home' });
+            })
+            .catch( error => {
+              this.$message.error('服务器错误:(' + error + ')');
+            });
         } else {
           console.log('error submit!!');
           return false;

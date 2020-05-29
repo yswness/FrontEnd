@@ -87,14 +87,25 @@ export default {
       if (cmd === 'logout') {
         window.sessionStorage.removeItem('userName');
         window.sessionStorage.removeItem('userType');
-        this.$router.go(0);
+        window.sessionStorage.removeItem('userRating');
+
+        this.$axios
+          .get(this.$globle.GLOBLE_BASEURL + '/logout/')
+          .then(() => {
+            this.userName = '';
+            this.isAdmin = false;
+            this.$router.go(0); //是否直接跳转到主页面
+          })
+          .catch(error => {
+            this.$message.error('服务器错误(' + error + ')');
+          })
       } else
       if (cmd === 'userDetail') {
         console.log('hi');
         this.$router.push({ name: 'User', params: { userID: this.userName }});
       } else
       if (cmd === 'setting') {
-        //this.$router.push({ path: `/user/${this.userName}/setting`});
+        this.$router.push({ name: 'Setting' });
       } else
       if (cmd === 'admin') {
         this.$router.push({ name: 'adminaddproblem' });

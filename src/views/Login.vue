@@ -64,26 +64,20 @@ export default {
 
       this.$refs[formName].validate((valid) => {
         if (valid) {
-
-          /* test */
-          window.sessionStorage.setItem("userName", this.ruleForm.account);
-          if (this.ruleForm.account === 'yswness') {
-            window.sessionStorage.setItem("userType", 'Admin');
-          }
-          setTimeout(() => { this.$router.go(0) });
-          this.$router.push({ name: 'Home' });
-          /* end */
-
-          /*
           let pass = this.$md5(this.ruleForm.pass);
           this.$axios
-            .post("", { // 请求账户信息 
+            .post( this.$globle.GLOBLE_BASEURL + "/login/", { // 请求账户信息 
               username: this.ruleForm.account,
               password: pass
             })
             .then(response => {
-              // 密码是否错误
-              // code 
+              // 密码是否错误 
+              console.log(response);
+              if (response.data === 'password error') {
+                this.$message.error('密码错误, 请重新输入密码');
+                return;
+              }
+
               this.$message({
                 message: '登录成功',
                 type: 'success'
@@ -91,13 +85,14 @@ export default {
 
               window.sessionStorage.setItem("userName", this.ruleForm.account);
               window.sessionStorage.setItem("userType", response.data.type);
-
+              window.sessionStorage.setItem("userRating", response.data.rating);
+              
+              setTimeout(() => { this.$router.go(0); }, 500);
+              this.$router.push({ name: 'Home' });
             })
             .catch(error => {
               this.$message.error('登录失败:(' + error + ')'); //加原因
             })
-            // 考虑拉取其它用户信息，比如rating这类的
-            */
         } else {
           console.log('error submit!!');
           return false;
