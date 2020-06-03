@@ -5,40 +5,43 @@
         <span>用户设置</span>
       </div>
       <el-form 
-        :model="ruleForm" 
+        :model="settingForm" 
         :rules="rules" 
-        ref="ruleForm" 
+        ref="settingForm" 
         label-width="100px" 
         class="setting-ruleForm" 
-        @keyup.native.enter="submitForm('ruleForm')"
+        @keyup.native.enter="submitSetting('settingForm')"
         status-icon>
         <el-form-item label="账户">
           <span> {{ username }} </span>
         </el-form-item>
         <el-form-item label="昵称" prop="name">
-          <el-input v-model="ruleForm.name" autocomplete="off"></el-input>
+          <el-input v-model="settingForm.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="班级" prop="classes">
-          <el-input v-model="ruleForm.classes" autocomplete="off"></el-input>
+          <el-input v-model="settingForm.classes" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="学号" prop="number">
-          <el-input v-model="ruleForm.number" autocomplete="off"></el-input>
+          <el-input v-model="settingForm.number" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="ruleForm.email" autocomplete="off"></el-input>
+        <el-form-item label="qq">
+          <el-input v-model="settingForm.qq" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="settingForm.email" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="旧密码" prop="oldPassword">
-          <el-input type="password" v-model="ruleForm.oldPassword" autocomplete="off" show-password></el-input>
+          <el-input type="password" v-model="settingForm.oldPassword" autocomplete="off" show-password></el-input>
         </el-form-item>
         <el-form-item label="新密码" prop="password">
-          <el-input type="password" v-model="ruleForm.password" autocomplete="off" show-password></el-input>
+          <el-input type="password" v-model="settingForm.password" autocomplete="off" show-password></el-input>
         </el-form-item>
         <el-form-item label="确认密码" prop="passCheck">
-          <el-input type="password" v-model="ruleForm.passCheck" autocomplete="off" show-password></el-input>
+          <el-input type="password" v-model="settingForm.passCheck" autocomplete="off" show-password></el-input>
         </el-form-item>
         <el-form-item class="setting-form-item">
-          <el-button class="setting-submit-button" type="primary" @click="submitForm('ruleForm')">提交</el-button>
-          <el-button @click="resetForm('ruleForm')">重置</el-button>
+          <el-button class="setting-submit-button" type="primary" @click="submitSetting('settingForm')">提交</el-button>
+          <el-button @click="resetForm('settingForm')">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -62,8 +65,8 @@ export default {
       if (value === '') {
         callback(new Error('请输入密码'));
       } else {
-        if (this.ruleForm.passCheck !== '') {
-          this.$refs.ruleForm.validateField('passCheck');
+        if (this.settingForm.passCheck !== '') {
+          this.$refs.settingForm.validateField('passCheck');
         }
         callback();
       }
@@ -72,7 +75,7 @@ export default {
       if (value === '') {
         callback(new Error('请确认密码'));
       } else {
-        if (value !== this.ruleForm.password) {
+        if (value !== this.settingForm.password) {
           callback(new Error('两次输入密码不一致'));
         }
         callback();
@@ -80,7 +83,7 @@ export default {
     }
     return {
       username: '',
-      ruleForm: {
+      settingForm: {
         name: '',
         password: '',
         oldPassword: '',
@@ -126,16 +129,44 @@ export default {
     };
   },
   methods: {
-    submitForm(formName) {
+    submitSetting(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+
+          let oldPass = this.$md5(this.settingForm.oldPassword);
+
           this.$axios
-            .put( this.$globle.GLOBLE_BASEURL + '/userupdate/', this.ruleForm)
-            .then( () => {
-              this.$message({
-                message: '修改成功',
-                type: 'success'
-              });
+            .post( this.$globle.GLOBLE_BASEURL + '/login/', {
+              username: this.username,
+              password: oldPass
+            })
+            .then( response => {
+              if (response.data === 'password error') {
+                this.$message.error('原密码错误, 请重新输入');
+                return;
+              }
+
+              let pass = this.$md5(this.settingForm.password);
+
+              this.$axios
+                .put( this.$globle.GLOBLE_BASEURL + '/userupdate/', {
+                  name: this.settingForm.name,
+                  password: pass,
+                  email: this.settingForm.email,
+                  classes: this.settingForm.classes,
+                  number: this.settingForm.number,
+                  qq: this.settingForm.qq,  
+                })
+                .then( () => {
+                  this.$message({
+                    message: '修改成功',
+                    type: 'success'
+                  });
+                })
+                .catch( error => {
+                  this.$message.error('服务器错误:(' + error + ')');
+                });
+                
             })
             .catch( error => {
               this.$message.error('服务器错误:(' + error + ')');

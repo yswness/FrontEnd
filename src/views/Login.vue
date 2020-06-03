@@ -72,7 +72,7 @@ export default {
             })
             .then(response => {
               // 密码是否错误 
-              console.log(response);
+              //console.log(response);
               if (response.data === 'password error') {
                 this.$message.error('密码错误, 请重新输入密码');
                 return;

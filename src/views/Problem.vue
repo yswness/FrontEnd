@@ -16,7 +16,6 @@
           <div class="problem-block">
             <el-pagination
               background
-              @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               :current-page.sync="currentPage"
               :page-size="pageSize"
@@ -68,7 +67,6 @@
           <div class="problem-block">
             <el-pagination
               background
-              @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               :current-page.sync="currentPage"
               :page-size="pageSize"
@@ -88,45 +86,68 @@ export default {
     return {
       currentPage: 1,
       inputText: '',
-      problemData: [{
-        problem_id: 0,
-        title: '',
-        submission_number: 0,
-        acnum: 0,
-        auth: '',
-        acrate: ''
-      }],
+      problemData: [
+        // problem_id: 0,
+        // title: '',
+        // auth: '',
+        // acrate: ''
+      ],
       pageSize: 40,
       totalProblem: 0
     };
   },
   methods: {
-    handleSizeChange(val) {
-      console.log(val)
-    },
     handleCurrentChange(val) {
       this.currentPate = val;
       this.$axios
         .get(
           this.$globle.GLOBLE_BASEURL +
-          "/problemdata/" +
+          "/problem/" +
           "?limit=" + this.pageSize +
           "&offset=" + (this.currentPage - 1) * this.pageSize +
-          "/"
+          "&auth=" + "Public" +
+          "&search=" + this.inputText
         )
         .then(response => {
           let problemDataLength = response.data.results.length;
-          for (let i = 0; i < problemDataLength; i++) {
-            let rate = response.data.results[i].acnum ? 
-              response.data.results[i].acnum / response.data.results[i].submission_number : 0;
-            response.data.results[i].acrate = Number(rate * 100).toFixed(2) + '%';
-          }
           this.problemData = response.data.results;
-          //console.log(this.problemData);
+          for (let i = 0; i < problemDataLength; i++) {
+            this.getACRate(this.problemData, i);
+          }
+          console.log(this.problemData);
         })
         .catch(error => {
           this.$message.error('服务器错误(' + error + ')');
         });
+    },
+    getACRate(problemData, k) {
+      this.$axios
+        .get(
+          this.$globle.GLOBLE_BASEURL + 
+          '/judgestatus/?problem=' + problemData[k].problem_id
+        )
+        .then( response1 => {
+          this.$axios
+            .get(
+              this.$globle.GLOBLE_BASEURL + 
+              '/judgestatus/?problem=' + problemData[k].problem_id +
+              '&result=0'
+            )
+            .then( response2 => {
+              let acnum = response2.data.length;
+              let submissionNumber = response1.data.length; //记得这里弄一下，等submission好了
+              let rate = acnum ? acnum / submissionNumber : 0;
+              problemData[k].acrate = Number(rate * 100).toFixed(2) + '%';
+              problemData[k].submission_number = submissionNumber;
+              problemData[k].acnum = acnum;
+            })
+            .catch( error => {
+              this.$message.error('服务器错误(' + error + ')');
+            })
+        })
+        .catch( error => {
+          this.$message.error('服务器错误(' + error + ')');
+        })
     },
     cellStyle(val) {
       if (val.columnIndex != 2)  {
@@ -146,10 +167,18 @@ export default {
       this.$router.push({ name: 'problembody', params: { problemID: val }})
     },
     inputChange() {
-      this.$router.go(0);
+      this.handleCurrentChange(1);
     }
   },
   created() {
+    this.$axios
+      .get( this.$globle.GLOBLE_BASEURL + '/problem/?limit=1' )
+      .then( response => {
+        this.totalProblem = response.data.count;
+      })
+      .catch( error => {
+        this.$message.error("服务器错误" + error);
+      });
     this.handleCurrentChange(1);
   }
 }

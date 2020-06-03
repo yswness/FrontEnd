@@ -16,8 +16,8 @@
             size="small"
             class="status-table-button"
             type="text"
-            @click="handleClickStatus(scope.row.id)">
-            {{ scope.row.id }}
+            @click="handleClickStatus(scope.row.status_id)">
+            {{ scope.row.status_id }}
           </el-button>
         </template>
       </el-table-column>
@@ -44,7 +44,7 @@
             size="small"
             class="status-result-button"
             :type="changeType(scope.row.result)"
-            @click="handleClickStatus(scope.row.id)">
+            @click="handleClickStatus(scope.row.status_id)">
             <i v-if="hasLoading(scope.row.result)" class="el-icon-loading"></i>
             {{ scope.row.result }}
           </el-button>
@@ -68,7 +68,7 @@
             size="small"
             class="status-table-button"
             type="text"
-            @click="handleClickProblem(scope.row.statusID)">
+            @click="handleClickProblem(scope.row.status_id)">
             {{ scope.row.language }}
           </el-button>
         </template>
@@ -114,6 +114,11 @@
 export default {
   name: 'statstable',
   props: {
+    propStatusID:  { type: String, default: '' },
+    propContestID: { type: String, default: '' },
+    propUserID:    { type: String, default: '' },
+    propProblem:   { type: String, default: '' },
+    propResult:    { type: String, default: '' }
   },
   data() {
     return {
@@ -122,7 +127,7 @@ export default {
       pageSize: 10,
       totalStatus: 0,
       statusData: [{
-        id: 0,
+        status_id: 0,
         problem: {
           problem_id: '',
           title: ''
@@ -136,7 +141,15 @@ export default {
         language: '',
         testcase: ''
       }],
-      resultsFilter: this.$globle.RESULTFILTER
+      resultsFilter: this.$globle.RESULTFILTER,
+
+      propData: {
+        postStatusID:  this.propStatusID,
+        postContestID: this.propContestID,
+        postUserID:    this.propUserID,
+        postProblem:   this.propProblem,
+        postResult:    this.propResult
+      }
     }
   },
   methods: {
@@ -173,14 +186,20 @@ export default {
 
     getStatusData() {
       this.loading = true;
+      let postURL = this.$globle.GLOBLE_BASEURL + '/judgestatus/';
+      if (this.propData.postStatusID === '') {
+        postURL +=
+        '?user='   + this.propData.postUserID +
+        '&limit='   + this.pageSize +
+        '&offset=' + (this.currentPage - 1) * this.pageSize +
+        '&problem=' + this.propData.postProblem +
+        '&result='  + this.propData.postResult +
+        '&contest=' + this.propData.postContestID
+      } else {
+        postURL += this.propData.postStatusID;
+      }
       this.$axios
-        .get(
-          this.$globle.GLOBLE_BASEURL +
-          '/judgestatus/' +
-          '?limit=' + this.pageSize +
-          '&offset=' + (this.currentPage - 1) * this.pageSize +
-          '/'
-        ) //暂定
+        .get( postURL ) //暂定
         .then(response => {
 
           let length = response.data.results.length;
@@ -220,5 +239,8 @@ export default {
 }
 .status-cell .cell {
   padding: 0px;
+}
+.status-block {
+  text-align: center;
 }
 </style>

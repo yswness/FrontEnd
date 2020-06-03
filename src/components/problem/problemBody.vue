@@ -1,7 +1,6 @@
 <template>
   <div id="problembody">
     <div id="problembody-head">
-      <!-- 菜单栏：待弄 -->
       <h2>{{'Problem.' + problemID + ' ' + title}}</h2>
       <ul id="problembody-ul">
         <li>{{'Time Limit: ' + time + ' ms'}}</li>
@@ -104,6 +103,7 @@
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/mode/clike/clike'
+import 'codemirror/mode/python/python'
 
 export default {
   components: {
@@ -125,7 +125,7 @@ export default {
       sOutput: '',
       hint: '',
 
-      code: '//Please wirte your code here',
+      code: '',
       cmOptions: {
         // codemirror options
         tabSize: 2,
@@ -134,25 +134,67 @@ export default {
         line: true
       },
       language: [{
-        value: 'text/x-c++src',
+        value: 'C++',
         label: 'C++'
       }, {
-        value: 'text/x-csrc',
+        value: 'C',
         label: 'C'
       }, {
-        value: 'text/x-java',
+        value: 'Java',
         label: 'Java'
+      }, {
+        value: 'Python2',
+        label: 'Python2'
+      }, {
+        value: 'Python3',
+        label: 'Python3'
       }],
-      langValue: 'text/x-c++src'
+      langValue: 'C++'
     }
   },
   methods: {
     handleSelectChange() {
-      this.cmOptions.mode = this.langValue;
+      switch(this.langValue) {
+        case 'C':       this.cmOptions.mode = 'text/x-csrc';   break;
+        case 'C++':     this.cmOptions.mode = 'text/x-c++src'; break;
+        case 'Java':    this.cmOptions.mode = 'text/x-java';   break;
+        case 'Python2': this.cmOptions.mode = 'text/x-python'; break;
+        case 'Python3': this.cmOptions.mode = 'text/x-python'; break;
+      }
       console.log(this.cmOptions.mode);
     },
     handleSubmit() {
-
+      let userName = window.sessionStorage.getItem('userName');
+      let postCodeLength = this.code.length;
+      if (postCodeLength > 65536) {
+        this.$message.error('提交失败:您的代码长度超出了限制，最多不能超过65536个字符');
+        return;
+      }
+      if (postCodeLength < 20) {
+        this.$message.error('提交失败:您的代码长度过短，最少需要20个字符');
+        return;
+      }
+      if (userName === '' || (!userName)) {
+        this.$message.error('请先登录!');
+        return;
+      }
+      this.$axios
+        .post( this.$globle.GLOBLE_BASEURL + '/submitcode/', {
+          problem: this.problemID,
+          user: userName,
+          code: this.code,
+          language: this.langValue,
+          length: postCodeLength
+        })
+        .then(() => {
+          this.$message({
+            message: '提交成功',
+            type: 'success'
+          })
+        })
+        .catch(error => {
+          this.$message.error('服务器错误' + error);
+        })
     }
   },
   watch: {
@@ -171,8 +213,8 @@ export default {
   },
   mounted() {
     this.$axios
-      .get(this.$globle.GLOBLE_BASEURL + "/problem/" + this.problemID + "/")
-      .then(response => {
+      .get( this.$globle.GLOBLE_BASEURL + "/problem/" + this.problemID )
+      .then( response => {
         console.log(response);
         this.title = response.data.Problem['title'];
         this.time = response.data.Problem['time'];
@@ -184,13 +226,13 @@ export default {
         this.hint = response.data.Problem['hint'];
         this.problemDes = response.data.Problem['problemdes']; // warning 是否考虑用异步
       })
-      .catch(error => {
+      .catch( error => {
         this.$message.error('服务器错误(' + error + ')');
       });
   },
   created() {
     this.problemID = this.$route.params.problemID;
-    require('ip');
+    //require('ip');
     
   }
 }

@@ -51,7 +51,6 @@ export default {
     }
   },
   created() {
-    console.log(this.$route);
     this.contestID = this.$route.params.contestID;
     switch (this.$route.name) {
       case 'contestsubpage': this.activeIndex = '1'; break;

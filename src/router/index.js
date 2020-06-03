@@ -150,7 +150,6 @@ router.beforeEach((to, from, next) => {
         to.name !== 'Login' &&
         to.name !== 'Problem' &&
         to.name !== 'Rating' &&
-        to.name !== 'Contest' &&
         (!window.sessionStorage.getItem('userName')) &&
         (window.sessionStorage.getItem('userName') !== '') ) next({ name: 'Login' });
   else next();

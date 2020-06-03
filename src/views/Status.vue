@@ -179,10 +179,9 @@ export default {
           this.$globle.GLOBLE_BASEURL +
           '/judgestatus/' +
           '?limit=' + this.pageSize +
-          '&offset=' + (this.currentPage - 1) * this.pageSize +
-          '/'
+          '&offset=' + (this.currentPage - 1) * this.pageSize
         ) //暂定
-        .then(response => {
+        .then( response => {
 
           let length = response.data.results.length;
           this.totalStatus = length; // 注意这里不应该是length, 应该拉取所有符合的，这里只是为了debug

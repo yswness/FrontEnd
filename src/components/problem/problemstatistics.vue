@@ -3,7 +3,9 @@
     <el-row>
       <el-col :span="16" :offset="4">
         <div style="text-align: center; margin: 30px;font-weight: bold;font-size: 26px">提交统计</div>
-        <statustable></statustable>
+        <statustable
+          :propProblem="problemID"
+          :propResult="result"></statustable>
       </el-col>
     </el-row>
   </div>
@@ -14,6 +16,15 @@ import statustable from '../statustable/statustable.vue'
 export default {
   components: {
     statustable
+  },
+  data() {
+    return {
+      problemID: '',
+      result: 'Accepted'
+    }
+  },
+  created() {
+    this.problemID = (this.$route.query.problemID).toString();
   }
 }
 </script>

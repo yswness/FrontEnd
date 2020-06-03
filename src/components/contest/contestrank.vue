@@ -61,7 +61,8 @@
 export default {
   data() {
     return {
-      tableData: [{
+      contestID: '',
+      tableData: [/*{
         user_id: 'yswness',
         total_time: 0,
         ac_number: 0,
@@ -82,40 +83,108 @@ export default {
             error_number: 1
           }
         ]
-      }, {
-        user_id: 'yswness',
-        total_time: 0,
-        ac_number: 0,
-        problemdetail: [{
-            problem_rank: 0,
-            is_ac: true,
-            last_ac: '00:03',
-            error_number: 0
-          }, {
-            problem_rank: 1,
-            is_ac: false,
-            last_ac: '',
-            error_number: 2
-          }, {
-            problem_rank: 2,
-            is_ac: true,
-            last_ac: '00:07',
-            error_number: 1
-          }
-        ]
-      }], //榜单信息,拿到数据后会暂时存到这里
+      }*/], //榜单信息,拿到数据后会暂时存到这里
       contestProblems: [  //榜单列的信息
-        { problemLabel: 'A' }, 
+        /*{ problemLabel: 'A' }, 
         { problemLabel: 'B' }, 
-        { problemLabel: 'C' }, 
+        { problemLabel: 'C' }, */
       ],
 
     }
   },
   created() {
     console.log('created');
+    this.initRankBoard();
   },
   methods: {
+    clearData() {
+      this.tableData = [];
+      this.contestProblems = [];
+    },
+    initRankBoard() {
+      this.clearData();
+      this.contestID = this.$route.params.contestID;
+
+      this.$axios
+        .get( this.$globle.GLOBLE_BASEURL + '/contestproblem/?contest=' + this.contestID )
+        .then( response => {
+          this.contestProblems = [];
+          let contestProblems = [];
+          let tableData = [];
+          response.data.sort( (a, b) => { return a.rank - b.rank } );
+          for (let problem of response.data) {
+            let charOfLable = String.fromCharCode('A'.charCodeAt() + problem.rank - 1);
+            contestProblems.push({
+              problemLabel: charOfLable
+            });
+          }
+
+          this.getParticipant(contestProblems, tableData); //得到参赛用户列表，默认已去重
+        })
+        .catch( error => {
+          this.$message.error('服务器错误' + error);
+        })
+    },
+    getParticipant(contestProblems, tableData) {
+      let users = [];
+      this.$axios
+        .get( this.$globle.GLOBLE_BASEURL + '/contestparticipant/?contest=' + this.contestID )
+        .then( response => {
+          response.data.forEach( x => users.push(x.user) );
+          if (users.length === 0) {
+            return;
+          }
+
+          for (let user of users) {
+            let userData = { user_id: user };
+            let userTableData = [];
+            this.$axios
+              .get( 
+                this.$globle.GLOBLE_BASEURL + 
+                '/acmboard/?user=' + user +
+                '&contest=' + this.contestID
+              )
+              .then( response => {
+                userTableData = response.data;
+                if (userTableData.length === 0) {
+                  return;
+                }
+                userData.total_time = userTableData[0].total_time;
+                userData.ac_number = userTableData[0].ac_number;
+                userData.problemdetail = [];
+                for (let problemData of userTableData) {
+                  userData.problemdetail.push({
+                    problem_rank: problemData.problem_rank - 1,
+                    is_ac: problemData.is_ac,
+                    last_ac: problemData.ac_time,
+                    error_number: problemData.error_number
+                  })
+                }
+                userData.problemdetail.sort( (a, b) => a.problem_rank - b.problem_rank );
+                tableData.push(userData);
+                if (tableData.length === users.length) {
+                  tableData.sort( (a, b) => {
+                    if (a.ac_number != b.ac_number) {
+                      return b.ac_number - a.ac_number;
+                    }
+                    return a.total_time - b.total_time;
+                  })
+                  
+                  this.contestProblems = contestProblems;
+                  this.tableData = tableData;
+                }
+              })
+              .catch( error =>  {
+                this.$message.error('服务器出错(' + error + ')');
+              });
+            
+          }
+          console.log('cui is gay');
+        })
+        .catch( error => { 
+          this.$message.error('服务器出错(' + error + ')')
+        });
+    },
     cellClick() {
 
     },

@@ -2,10 +2,30 @@
   <div id="admin-addcontest">
 
     <el-dialog title="选择题目" :visible.sync="dialogIsAble">
+      <el-input
+        class="problem-input"
+        type="text"
+        maxlength="64"
+        minlength="1"
+        placeholder="题目ID/题目名"
+        v-model="inputText"
+        @change="inputChange">
+        <i slot="prefix" class="el-input__icon el-icon-search"></i>
+      </el-input>
       <el-table :data="problemData" ref="problemTable" @current-change="handleCurrentChange" highlight-current-row>
-        <el-table-column property="problemID" label="题目ID" width="100px"></el-table-column>
+        <el-table-column property="problem_id" label="题目ID" width="100px"></el-table-column>
         <el-table-column property="title" label="题目名称"></el-table-column>
       </el-table>
+      <div class="problem-block">
+        <el-pagination
+          background
+          @current-change="handlePageChange"
+          :current-page.sync="currentPage"
+          :page-size="pageSize"
+          layout="prev, pager, next, jumper"
+          :total="totalProblem">
+        </el-pagination>
+      </div>
     </el-dialog>
 
     <el-row>
@@ -69,10 +89,12 @@ export default {
   data() {
     return {
       dialogIsAble: false,
-      problemData: [{
-        problemID: 1001,
-        title: 'A + B'
-      }],
+      currentPage: 1,
+      pageSize: 20,
+      totalProblem: 0,
+      inputText: '',
+
+      problemData: [],
       dataForm: {
         contest_id: 0,
         creator_id: '',
@@ -83,11 +105,11 @@ export default {
         auth: ''
       },
       rules: {
-        title: [ { required: true, message: '请输入题目标题', trigger: 'blur' } ],
+        title:      [ { required: true, message: '请输入题目标题', trigger: 'blur' } ],
         creator_id: [ { required: true, message: '请输入创建人', trigger: 'blur' } ],
-        type: [ { required: true, message: '请选择比赛类型', trigger: 'blur' } ],
-        auth: [ { required: true, message: '请选择比赛权限', trigger: 'blur' } ],
-        dateRange: [ { required: true, message: '请选择比赛时间', trigger: 'blur' } ]
+        type:       [ { required: true, message: '请选择比赛类型', trigger: 'blur' } ],
+        auth:       [ { required: true, message: '请选择比赛权限', trigger: 'blur' } ],
+        dateRange:  [ { required: true, message: '请选择比赛时间', trigger: 'blur' } ]
       },
       currentRow: null
     }
@@ -95,11 +117,31 @@ export default {
   methods: {
     selectProblem() {
       this.dialogIsAble = true;
+      this.handlePageChange(1);
+    },
+    handlePageChange(val) {
+      this.currentPage = val;
+      this.$axios
+        .get( this.$globle.GLOBLE_BASEURL + 
+          '/problem/?limit=' + this.pageSize +
+          '&offset=' + ((this.currentPage - 1) * this.pageSize) +
+          '&search=' + this.inputText
+        )
+        .then( response => {
+          this.problemData = response.data.results;
+        })
+        .catch( error => {
+          this.$message.error('服务器错误' + error);
+        })
+    },
+    inputChange() {
+      this.handlePageChange(1);
     },
     handleCurrentChange(val) {
       if (!val) return;
       this.dataForm.problems.push({
-        problemID: val.problemID,
+        problemID: val.problem_id,
+        problemTitle: val.title,
         key: Date.now()
       })
       this.$refs.problemTable.setCurrentRow(null);
@@ -114,7 +156,34 @@ export default {
     submitForm(item) {
       this.$refs[item].validate((valid) => {
         if (valid) {
-          alert('submit!');
+          this.dataForm.create_time = parseInt((this.dataForm.dateRange[1] - this.dataForm.dateRange[0]) / 1000);
+          this.dataForm.start_time = this.dataForm.dateRange[0].toISOString();
+          this.dataForm.end_time = this.dataForm.dateRange[1].toISOString();
+          this.$axios
+            .post( this.$globle.GLOBLE_BASEURL + '/contest/', this.dataForm )
+            .then( () => {
+              let that = this;
+              let newProblems = this.dataForm.problems;
+              for (let i = 0; i < newProblems.length; i++) {
+                this.$axios
+                  .post( this.$globle.GLOBLE_BASEURL + '/contestproblem/', {
+                    contest_id: that.dataForm.contest_id,
+                    problem_id: newProblems[i].problemID,
+                    problemtitle: newProblems[i].problemTitle,
+                    rank: i
+                  })
+                  .catch( error => {
+                    this.$message.error('服务器错误(' + error + ')');
+                  });
+              }
+              this.$message({
+                message: '提交成功',
+                type: 'success'
+              });
+            })
+            .catch( error => {
+              this.$message.error('服务器错误(' + error + ')');
+            })
         } else {
           console.log('error submit!!');
           return false;

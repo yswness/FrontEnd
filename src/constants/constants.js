@@ -47,8 +47,9 @@ const RATINGCOLOR = function (rating) {
   else if (rating < 1400) return 'green';
   else if (rating < 1600) return '#03A89E';
   else if (rating < 1900) return 'blue';
-  else if (rating < 2100) return '#FF8C00';
-  else if (rating < 2400) return 'red';
+  else if (rating < 2100) return '#A0A';
+  else if (rating < 2400) return '#FF8C00';
+  else return 'red';
 }
 
 const GLOBLE_BASEURL = process.env.VUE_APP_BASE_URL;

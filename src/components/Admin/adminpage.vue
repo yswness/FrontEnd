@@ -17,6 +17,11 @@
               <div class="li-block">添加比赛</div>
             </router-link>
           </el-menu-item>
+          <el-menu-item index="3">
+            <router-link :to="{ name: 'adminaddprivilege'}">
+              <div class="li-block">用户管理</div>
+            </router-link>
+          </el-menu-item>
         </el-menu>
       </el-col>
     </el-row>

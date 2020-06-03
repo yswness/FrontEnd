@@ -13,12 +13,12 @@
               </router-link>
             </el-menu-item>
             <el-menu-item index="2">
-              <router-link :to="{ name: 'problemmysubmission'}">
+              <router-link :to="{ name: 'problemmysubmission', query: { problemID }}">
                 <div class="li-block">我的提交</div>
               </router-link>
             </el-menu-item>
             <el-menu-item index="3">
-              <router-link :to="{ name: 'problemstatistics'}">
+              <router-link :to="{ name: 'problemstatistics', query: { problemID }}">
                 <div class="li-block">统计</div>
               </router-link>
             </el-menu-item>

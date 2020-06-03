@@ -33,6 +33,9 @@
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="ruleForm.email" autocomplete="off"></el-input>
         </el-form-item>
+        <el-form-item label="qq">
+          <el-input v-model="ruleForm.qq" autocomplete="off"></el-input>
+        </el-form-item>
         <el-form-item class="register-form-item">
           <el-button class="register-submit-button" type="primary" @click="submitForm('ruleForm')">提交</el-button>
           <el-button @click="resetForm('ruleForm')">重置</el-button>
@@ -85,7 +88,7 @@ export default {
         school: '', // The Dic has not it
         classes: '',
         number: '',
-        qq: '',        
+        qq: ''     
       },
       rules: {
         username: [
@@ -132,11 +135,10 @@ export default {
                 return;
               }
               this.$message({
-                message: '注册成功',
+                message: '注册成功, 继续前往登录页面登录',
                 type: 'success'
               });
-              setTimeout(() => { this.$router.go(0);}, 500);
-              this.$router.push({ name: 'Home' });
+              this.$router.push({ name: 'Login' });
             })
             .catch( error => {
               this.$message.error('服务器错误:(' + error + ')');

@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="16" :offset="4">
         <div style="margin-top: 20px">
-          <statustable></statustable>
+          <statustable :propStatusID="statusID"></statustable>
         </div>
         <el-card class="code-card">
           <div slot="header" class="code-card-header">
@@ -49,8 +49,13 @@ export default {
         value: 'text/x-java',
         label: 'Java'
       }],
-      langValue: 'text/x-c++src'
+      langValue: 'text/x-c++src',
+
+      statusID: ''
     }
+  },
+  created() {
+    this.statusID = this.$route.params.submissionID;
   }
 }
 </script>
