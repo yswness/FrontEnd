@@ -110,6 +110,7 @@ export default {
         )
         .then(response => {
           let problemDataLength = response.data.results.length;
+          this.totalProblem = response.data.count;
           this.problemData = response.data.results;
           for (let i = 0; i < problemDataLength; i++) {
             this.getACRate(this.problemData, i);

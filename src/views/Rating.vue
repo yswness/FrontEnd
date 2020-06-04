@@ -87,6 +87,7 @@ export default {
             }
           }
           this.ratingData = response.data.results;
+          this.count = response.data.count;
           //console.log(this.problemData);
         })
         .catch(error => {

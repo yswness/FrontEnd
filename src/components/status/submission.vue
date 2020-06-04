@@ -48,6 +48,12 @@ export default {
       }, {
         value: 'text/x-java',
         label: 'Java'
+      }, {
+        value: 'text/x-python',
+        label: 'Python2'
+      }, {
+        value: 'text/x-python',
+        label: 'Python3'
       }],
       langValue: 'text/x-c++src',
 
@@ -56,6 +62,14 @@ export default {
   },
   created() {
     this.statusID = this.$route.params.submissionID;
+    this.$axios
+      .get( this.$globle.GLOBLE_BASEURL + '/getcode/' + this.statusID )
+      .then( (response) => {
+        this.code = response.data.code;
+      })
+      .catch( error => {
+        this.$message.error('服务器错误' + error);
+      })
   }
 }
 </script>

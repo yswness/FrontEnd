@@ -28,6 +28,11 @@
                 <div class="li-block">比赛排行</div>
               </router-link>
             </el-menu-item>
+            <el-menu-item index="5">
+              <router-link :to="{ name: 'comment'}">
+                <div class="li-block">用户提问</div>
+              </router-link>
+            </el-menu-item>
           </el-menu>
           
         <!--</el-card>-->
@@ -57,6 +62,7 @@ export default {
       case 'mysubmission':   this.activeIndex = '2'; break;
       case 'submission':     this.activeIndex = '3'; break;
       case 'rank':           this.activeIndex = '4'; break;
+      case 'comment':        this.activeIndex = '5'; break;
     }
   }
 }

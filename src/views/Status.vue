@@ -184,7 +184,7 @@ export default {
         .then( response => {
 
           let length = response.data.results.length;
-          this.totalStatus = length; // 注意这里不应该是length, 应该拉取所有符合的，这里只是为了debug
+          this.totalStatus = response.data.count; // 注意这里不应该是length, 应该拉取所有符合的，这里只是为了debug
           for (let i = 0; i < length; i++) {
             response.data.results[i].title =
               response.data.results[i].problem.problem_id + 

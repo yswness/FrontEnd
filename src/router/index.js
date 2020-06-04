@@ -93,6 +93,11 @@ const routes = [
         path: 'rank',
         name: 'rank',
         component: () => import(/* webpackChunkName: "contest" */ '../components/contest/contestrank.vue')
+      },
+      {
+        path: 'comment',
+        name: 'comment',
+        component: () => import(/* webpackChunkName: "contest" */ '../components/contest/contestcomment.vue')
       }
     ]
   },

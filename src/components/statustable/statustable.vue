@@ -100,6 +100,7 @@
     <div class="status-block">
       <el-pagination
         background
+        hide-on-single-page
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page.sync="currentPage"
@@ -199,11 +200,18 @@ export default {
         postURL += this.propData.postStatusID;
       }
       this.$axios
-        .get( postURL ) //暂定
+        .get( postURL ) 
         .then(response => {
-
+          if (this.propData.postStatusID !== '') {
+            let resData = response.data;
+            response.data.count = 1;
+            response.data.results = [];
+            response.data.results.push(resData);
+            //response.data.result.length = 1;
+          }
+          console.log(response.data.results);
           let length = response.data.results.length;
-          this.totalStatus = length; // 注意这里不应该是length, 应该拉取所有符合的，这里只是为了debug
+          this.totalStatus = response.data.count;
           for (let i = 0; i < length; i++) {
             response.data.results[i].title =
               response.data.results[i].problem.problem_id + 

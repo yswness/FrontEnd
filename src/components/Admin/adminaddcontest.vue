@@ -128,6 +128,7 @@ export default {
           '&search=' + this.inputText
         )
         .then( response => {
+          this.totalProblem = response.data.count;
           this.problemData = response.data.results;
         })
         .catch( error => {
