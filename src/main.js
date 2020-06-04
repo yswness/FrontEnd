@@ -39,7 +39,7 @@ import moment from 'moment'
 Vue.prototype.$moment = moment;
 
 /* mockjs 模拟数据 测试完及时删除 */
-import './mockjs';
+//import './mockjs/mock';
 
 
 /* debug */

@@ -23,7 +23,7 @@
                 width="380px">
                 <template slot-scope="scope">
                   <router-link :to="{ name: 'contestproblem', params: { problemKey: scope.row.problem }}">
-                    {{ scope.row.title }}
+                    {{ scope.row.problemtitle }}
                   </router-link>
                 </template>
               </el-table-column>
@@ -68,14 +68,14 @@ export default {
       isStart: false,
       isEnd: false,
       contestID: 0,
-      problemData: [{
+      problemData: [/*{
         problem_id: 'A',
         problem: '1000',
-        title: 'A + B',
+        problemtitle: 'A + B',
         submission_number: 8,
         acnum: 5,
         acrate: '6%'
-      }],
+      }*/],
       contestData: [{
         start_time: '',
         end_time: ''
@@ -160,7 +160,7 @@ export default {
     this.$axios
       .get( 
         this.$globle.GLOBLE_BASEURL +
-        '/contest/' + this.contestID
+        '/contest/' + this.contestID + '/'
       )
       .then( response => {
         console.log(response);

@@ -208,18 +208,18 @@ export default {
   },
   mounted() {
     this.$axios
-      .get( this.$globle.GLOBLE_BASEURL + "/problem/" + this.problemID )
+      .get( "/api/problemdetail/" + this.problemID + '/')
       .then( response => {
         console.log(response);
-        this.title = response.data.Problem['title'];
-        this.time = response.data.Problem['time'];
-        this.memory = response.data.Problem['memory'];
-        this.input = response.data.Problem['input'];
-        this.output = response.data.Problem['output'];
-        this.sInput = JSON.parse(response.data.Problem['sinput']);
-        this.sOutput = JSON.parse(response.data.Problem['soutput']);
-        this.hint = response.data.Problem['hint'];
-        this.problemDes = response.data.Problem['problemdes'];
+        this.title = response.data['title'];
+        this.time = response.data['time'];
+        this.memory = response.data['memory'];
+        this.input = response.data['input'];
+        this.output = response.data['output'];
+        this.sInput = JSON.parse(response.data['sinput']);
+        this.sOutput = JSON.parse(response.data['soutput']);
+        this.hint = response.data['hint'];
+        this.problemDes = response.data['problemdes'];
       })
       .catch( error => {
         this.$message.error('服务器错误(' + error + ')');

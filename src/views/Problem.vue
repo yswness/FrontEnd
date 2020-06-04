@@ -109,6 +109,7 @@ export default {
           "&search=" + this.inputText
         )
         .then(response => {
+          console.log(response);
           this.totalProblem = response.data.count;
           response.data.results.forEach( item => {
             item.acnum = 0;

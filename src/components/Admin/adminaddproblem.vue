@@ -209,14 +209,15 @@ export default {
                 postSinput.push(item.sinput);
                 postSoutput.push(item.soutput);
               }
+              console.log();
 
               JSON.stringify(this.dataForm.sample);
               this.$axios
                 .post( this.$globle.GLOBLE_BASEURL + '/problemdetail/', {
-                  problem_id: this.nowProblemID,
+                  problem: this.nowProblemID,
                   title: this.dataForm.title,
                   author: this.dataForm.author,
-                  problemdes: this.dataForm.problemdes,
+                  problemdes: this.dataForm.description,
                   input: this.dataForm.input,
                   output: this.dataForm.output,
                   sinput: JSON.stringify(postSinput),

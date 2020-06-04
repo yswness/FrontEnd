@@ -13,7 +13,7 @@
       <el-col :span="12" :offset="6">
         <el-card class="problembody-card">
           <div slot="header" class="problembody-card-header">
-            <span>Problem Description</span>
+            <span class="body-title">Problem Description</span>
           </div>
           <div 
             class="problembody-des"
@@ -22,7 +22,7 @@
         </el-card>
         <el-card class="problembody-card">
           <div slot="header" class="problembody-card-header">
-            <span>Input Description</span>
+            <span class="body-title">Input Description</span>
           </div>
           <div 
             class="problembody-des"
@@ -31,7 +31,7 @@
         </el-card>
         <el-card class="problembody-card">
           <div slot="header" class="problembody-card-header">
-            <span>Output Description</span>
+            <span class="body-title">Output Description</span>
           </div>
           <div 
             class="problembody-des"
@@ -39,19 +39,14 @@
           </div>
         </el-card>
         <el-card class="problembody-card">
-          <div slot="header" class="problembody-card-header">
-            <span>Sample</span>
-          </div>
           <div class="problembody-sample">
-            <!-- sample code for? -->
             <div>
-              <span style="font-weight: bold">Sample Input</span>
-              <el-row class="pro-sam-input">
-                <pre>{{ sInput }}</pre>
-              </el-row>
-              <span style="font-weight: bold">Sample Output</span>
-              <el-row class="pro-sam-output">
-                <pre>{{ sOutput }}</pre>
+              <el-row v-for="(item, index) in sInput" :key="index">
+                <span class="body-title"> {{ 'Sample Input ' + (index + 1) }} </span>
+                <pre class="sampledata">{{ sInput[index] }}</pre>
+                <span class="body-title"> {{ 'Sample Output ' + (index + 1) }} </span>
+                <pre class="sampledata">{{ sOutput[index] }}</pre>
+                <hr>
               </el-row>
             </div>
 
@@ -59,7 +54,7 @@
         </el-card>
         <el-card class="problembody-card">
           <div slot="header" class="problembody-card-header">
-            <span>Hint</span>
+            <span class="body-title">Hint</span>
           </div>
           <div 
             class="problembody-des"
@@ -69,7 +64,7 @@
 
         <el-card class="problembody-card">
           <div slot="header" class="problembody-card-header">
-            <span>Code</span>
+            <span class="body-title">Code</span>
           </div>
           <el-select
             @change="handleSelectChange"
@@ -121,8 +116,8 @@ export default {
       problemDes: '',
       input: '',
       output: '',
-      sInput: '',
-      sOutput: '',
+      sInput: [],
+      sOutput: [],
       hint: '',
 
       code: '',
@@ -198,7 +193,7 @@ export default {
     }
   },
   watch: {
-    problemDes: function () { //一定要让problemDes最后传值
+    problemDes: function () {
       console.log('data changed');
       let that = this;
       this.$nextTick()
@@ -213,18 +208,18 @@ export default {
   },
   mounted() {
     this.$axios
-      .get( this.$globle.GLOBLE_BASEURL + "/problem/" + this.problemID )
+      .get( "/api/problemdetail/" + this.problemID + '/')
       .then( response => {
         console.log(response);
-        this.title = response.data.Problem['title'];
-        this.time = response.data.Problem['time'];
-        this.memory = response.data.Problem['memory'];
-        this.input = response.data.Problem['input'];
-        this.output = response.data.Problem['output'];
-        this.sInput = response.data.Problem['sinput'];
-        this.sOutput = response.data.Problem['soutput'];
-        this.hint = response.data.Problem['hint'];
-        this.problemDes = response.data.Problem['problemdes']; // warning 是否考虑用异步
+        this.title = response.data['title'];
+        this.time = response.data['time'];
+        this.memory = response.data['memory'];
+        this.input = response.data['input'];
+        this.output = response.data['output'];
+        this.sInput = JSON.parse(response.data['sinput']);
+        this.sOutput = JSON.parse(response.data['soutput']);
+        this.hint = response.data['hint'];
+        this.problemDes = response.data['problemdes'];
       })
       .catch( error => {
         this.$message.error('服务器错误(' + error + ')');
@@ -256,13 +251,17 @@ export default {
 .problembody-card {
   margin-top: 40px;
 }
-.pro-sam-input, .pro-sam-output {
+.sampledata {
   margin: 1rem 0;
-  padding: 0em 1em;
+  padding: 10px;
   border-radius: .28571429rem;
   border: 1px solid rgba(34, 36, 38, .15);
   background-color: #f5f5f5;
-  min-height: 33px;
+  font-family: Consolas, Menlo, Monaco, "Courier New", monospace;
+}
+.body-title {
+  font-weight: bold;
+  font-size: 20px;
 }
 .problembody-select {
   margin-bottom: 20px;
@@ -271,5 +270,11 @@ export default {
 .problembody-submit-button {
   margin: 10px;
   float: right;
+}
+hr {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 0;
+  border-top: 1px solid #eee;
 }
 </style>

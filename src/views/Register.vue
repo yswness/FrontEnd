@@ -126,6 +126,8 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.ruleForm.password = this.$md5(this.ruleForm.password);
+          this.ruleForm.passCheck = this.$md5(this.ruleForm.passCheck); 
           this.$axios
             .post( this.$globle.GLOBLE_BASEURL + '/register/', this.ruleForm)
             .then( response => {

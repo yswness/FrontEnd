@@ -65,6 +65,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let pass = this.$md5(this.ruleForm.pass);
+          console.log(pass);
           this.$axios
             .post( this.$globle.GLOBLE_BASEURL + "/login/", { // 请求账户信息 
               username: this.ruleForm.account,
