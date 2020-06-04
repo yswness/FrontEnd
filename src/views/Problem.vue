@@ -109,46 +109,44 @@ export default {
           "&search=" + this.inputText
         )
         .then(response => {
-          let problemDataLength = response.data.results.length;
           this.totalProblem = response.data.count;
+          response.data.results.forEach( item => {
+            item.acnum = 0;
+            item.submission_number = 0;
+            item.acrate = '0%';
+          })
           this.problemData = response.data.results;
-          for (let i = 0; i < problemDataLength; i++) {
-            this.getACRate(this.problemData, i);
-          }
+          let that = this;
+          let promiseAll = this.problemData.map( item => { //先获得所有题总提交次数
+            return that.$axios.get( that.$globle.GLOBLE_BASEURL + 
+                                    '/judgestatus/?problem=' + item.problem_id);
+          }).concat(
+            this.problemData.map( item => {
+              return that.$axios.get( that.$globle.GLOBLE_BASEURL + 
+                                      '/judgestatus/?problem=' + item.problem_id + '&result=0');
+            })
+          );
+          this.$axios.all(promiseAll).then(function(resArr) {
+            resArr.forEach(function(res, i) {
+              if (i < that.problemData.length) {
+                that.problemData[i].submission_number = res.data.length;
+              } else {
+                let k = i - that.problemData.length;
+                that.problemData[k].acnum = res.data.length;
+                let submissionNumber = that.problemData[k].submission_number;
+                let acnum = that.problemData[k].acnum;
+                let rate = acnum ? acnum / submissionNumber : 0;
+                that.problemData[k].acrate = (rate * 100).toFixed(2) + '%';
+
+              }
+              //that.problemData[i].problem_id = 'A';
+            })
+          });
           console.log(this.problemData);
         })
         .catch(error => {
           this.$message.error('服务器错误(' + error + ')');
         });
-    },
-    getACRate(problemData, k) {
-      this.$axios
-        .get(
-          this.$globle.GLOBLE_BASEURL + 
-          '/judgestatus/?problem=' + problemData[k].problem_id
-        )
-        .then( response1 => {
-          this.$axios
-            .get(
-              this.$globle.GLOBLE_BASEURL + 
-              '/judgestatus/?problem=' + problemData[k].problem_id +
-              '&result=0'
-            )
-            .then( response2 => {
-              let acnum = response2.data.length;
-              let submissionNumber = response1.data.length; //记得这里弄一下，等submission好了
-              let rate = acnum ? acnum / submissionNumber : 0;
-              problemData[k].acrate = Number(rate * 100).toFixed(2) + '%';
-              problemData[k].submission_number = submissionNumber;
-              problemData[k].acnum = acnum;
-            })
-            .catch( error => {
-              this.$message.error('服务器错误(' + error + ')');
-            })
-        })
-        .catch( error => {
-          this.$message.error('服务器错误(' + error + ')');
-        })
     },
     cellStyle(val) {
       if (val.columnIndex != 2)  {

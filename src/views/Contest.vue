@@ -26,7 +26,7 @@
             width="200px">
           </el-table-column>
           <el-table-column
-            prop="create_time"
+            prop="during_time"
             label="比赛时长"
             width="180px">
           </el-table-column>
@@ -84,7 +84,7 @@ export default {
         contest_id: 0,
         title: '测试比赛名称',
         start_time: '',
-        create_time: '',
+        during_time: '',
         isRegister: false
       }*/],
     }
@@ -102,11 +102,14 @@ export default {
         .then( response => {
           let contestData = response.data.results;
           for (let i = 0; i < contestData.length; i++) {
-            let createTime = contestData[i].create_time;
-            contestData[i].create_time =
-              parseInt(createTime / 3600) + '小时' +
-              (parseInt(createTime / 60) % 60) + '分钟' +
-              parseInt(createTime % 3600) + '秒';
+            let duringTime = 
+              this.$moment(contestData[i].end_time)
+              .diff(this.$moment(contestData[i].start_time))
+            duringTime /= 1000;
+            contestData[i].during_time =
+              parseInt(duringTime / 3600) + '小时' +
+              (parseInt(duringTime / 60) % 60) + '分钟' +
+              parseInt(duringTime % 3600) + '秒';
             contestData[i].start_time = 
               this.$moment(contestData[i].start_time).format('YYYY-MM-DD HH:mm:ss');
             

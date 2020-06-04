@@ -46,6 +46,26 @@
             <el-form-item label="空间限制(MiB)" prop="memory">
               <el-input-number v-model="dataForm.memory" :step="32" step-strictly></el-input-number>
             </el-form-item>
+            <el-form-item label="测试数据上传">
+              <el-upload
+                ref="upload"
+                action="/api/uploadfile/"
+                :on-exceed="handleExceed"
+                :on-change="handleChange"
+                :on-success="handleSuccessNone"
+                :on-error="handleError"
+                :on-remove="handleRemove"
+                :file-list="fileList"
+                :multiple="false"
+                :limit="1"
+                :auto-upload="false"
+                :http-request="fileUpload">
+                <el-button slot="trigger" size="small" type="primary">选择测试数据文件</el-button>
+                <div slot="tip" class="el-upload__tip">
+                  只能上传后缀为'.zip'的ZIP文件, 输入输出文件后缀为'.in'和'.out'
+                </div>
+              </el-upload>
+            </el-form-item>
             <el-form-item label="权限" prop="auth">
               <el-select v-model="dataForm.auth" placeholder="选择题目权限">
                 <el-option label="Public" value="Public"></el-option>
@@ -83,6 +103,7 @@ export default {
   data() {
     return {
       nowProblemID: 0,
+      fileList: [],
       dataForm: {
         title: '',
         description: '',
@@ -94,7 +115,7 @@ export default {
         score: 0,
         auth: '',
         author: '',
-        source: 0,
+        source: '',
         sample: [{
           sinput: '',
           soutput: ''
@@ -114,6 +135,45 @@ export default {
     }
   },
   methods: {
+    fileUpload(f) {
+      let formData = new FormData();
+      let newFile = new File([f.file], this.nowProblemID + ".zip");
+      
+      formData.append("file", newFile);
+      this.$axios
+        .post(f.action, formData, { headers: { "Content-Type": "multipart/form-data" } })
+        .then(response => {
+          f.onSuccess(response.data);
+        })
+        .catch(err => {
+          console.log(err);
+          f.onError(err);
+        });
+    },
+    handleRemove() {
+      this.fileList = [];
+    },
+    handleExceed() {
+      this.$message.error(
+        "一次至多只能上传一个文件"
+      );
+    },
+    handleChange(file, fileList) {
+      var name = file.name;
+      var li = name.split(".");
+      this.fileList = fileList;
+      if (li[1] != "zip") {
+        this.$message.error("数据文件名名不正确");
+        this.fileList = [];
+      }
+    },
+    handleError(error) {
+      this.$message.error("数据上传失败" + error);
+    },
+    handleSuccessNone() {
+      this.$message.success("上传成功");
+      this.$router.go(0);
+    },
     addSample() {
       this.dataForm.sample.push({
         sinput: '',
@@ -143,14 +203,14 @@ export default {
               addtime: nowTime
             })
             .then( () => {
-              
-              let postSinput = this.dataForm.sample[0];
-              let postSoutput = this.dataForm.sample[0];
-              let sampleCount = this.dataForm.sample.length;
-              for (let i = 0; i < sampleCount - 1; i++) {
-                postSinput += String.fromCharCode(0x20BB7) + this.dataForm.sample[i + 1];
-                postSoutput += String.fromCharCode(0x20BB7) + this.dataForm.sample[i + 1];
+              let postSinput = [];
+              let postSoutput = [];
+              for (let item of this.dataForm.sample) {
+                postSinput.push(item.sinput);
+                postSoutput.push(item.soutput);
               }
+
+              JSON.stringify(this.dataForm.sample);
               this.$axios
                 .post( this.$globle.GLOBLE_BASEURL + '/problemdetail/', {
                   problem_id: this.nowProblemID,
@@ -159,14 +219,15 @@ export default {
                   problemdes: this.dataForm.problemdes,
                   input: this.dataForm.input,
                   output: this.dataForm.output,
-                  sinput: postSinput,
-                  soutput: postSoutput,
+                  sinput: JSON.stringify(postSinput),
+                  soutput: JSON.stringify(postSoutput),
                   source: this.dataForm.source,
                   time: this.dataForm.time,
                   memory: this.dataForm.memory,
                   hint: this.dataForm.hint
                 })
                 .then( () => {
+                  this.$refs.upload.submit();
                   this.$message({
                     message: '题目添加成功',
                     type: 'success'
@@ -191,12 +252,12 @@ export default {
   },
   created() {
     this.$axios
-      .get( this.$globle.GLOBLE_BASEURL + '/problem/?limit=1&offset=0/' )
+      .get( this.$globle.GLOBLE_BASEURL + '/problem/?limit=1&offset=0' )
       .then( response => {
-        if (response.data === null)
+        if (!response.data.count)
           this.nowProblemID = 1000;
         else
-          this.nowProblemID = response.data.problem_id + 1;
+          this.nowProblemID = response.data.count + 1000;
       })
       .catch( error => {
         this.$message.error('服务器错误(' + error + ')');
@@ -211,5 +272,9 @@ export default {
 }
 .admin-addpro-button {
   margin-left: 20px;
+}
+.admin-addproblem-card {
+  margin-top: 20px;
+  margin-bottom: 80px;
 }
 </style>

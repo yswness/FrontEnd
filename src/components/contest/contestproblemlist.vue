@@ -110,11 +110,13 @@ export default {
           let that = this;
           let promiseAll = this.problemData.map( item => { //先获得所有题总提交次数
             return that.$axios.get( that.$globle.GLOBLE_BASEURL + 
-                                    '/judgestatus/?problem=' + item.problem);
+                                    '/judgestatus/?problem=' + item.problem +
+                                    '&contest=' + that.contestID);
           }).concat(
             this.problemData.map( item => {
               return that.$axios.get( that.$globle.GLOBLE_BASEURL + 
-                                      '/judgestatus/?problem=' + item.problem + '&result=0');
+                                      '/judgestatus/?problem=' + item.problem + '&result=0' +
+                                      '&contest=' + that.contestID);
             })
           );
           this.$axios.all(promiseAll).then(function(resArr) {
@@ -196,17 +198,13 @@ export default {
             that.isRegister = response2.data.length !== 0;
             if ((that.isRegister && that.isStart) || that.isEnd) {
               that.isVisible = true;
+              this.initProblemList();
             }
           })
       })
       .catch( error => {
         this.$message.error('服务器错误' + error);
       })
-  },
-  mounted() {
-
-    this.initProblemList();
-    console.log(this.problemData);
   }
 }
 </script>

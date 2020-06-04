@@ -1,6 +1,5 @@
 <template>
   <div id="admin-addcontest">
-
     <el-dialog title="选择题目" :visible.sync="dialogIsAble">
       <el-input
         class="problem-input"
@@ -111,8 +110,19 @@ export default {
         auth:       [ { required: true, message: '请选择比赛权限', trigger: 'blur' } ],
         dateRange:  [ { required: true, message: '请选择比赛时间', trigger: 'blur' } ]
       },
-      currentRow: null
+      currentRow: null,
+
     }
+  },
+  created() {
+    this.$axios
+      .get( this.$globle.GLOBLE_BASEURL + '/contest/?limit=1')
+      .then( response => {
+        this.dataForm.contest_id = response.data.count + 1;
+      })
+      .catch( error => {
+        this.$message.error('服务器错误' + error);
+      })
   },
   methods: {
     selectProblem() {
@@ -161,7 +171,15 @@ export default {
           this.dataForm.start_time = this.dataForm.dateRange[0].toISOString();
           this.dataForm.end_time = this.dataForm.dateRange[1].toISOString();
           this.$axios
-            .post( this.$globle.GLOBLE_BASEURL + '/contest/', this.dataForm )
+            .post( this.$globle.GLOBLE_BASEURL + '/contest/', {
+              contest_id: this.dataForm.contest_id,
+              creator:    this.dataForm.creator_id,
+              title:      this.dataForm.title,
+              start_time: this.dataForm.dateRange[0],
+              end_time:   this.dataForm.dateRange[1],
+              type:       this.dataForm.type,
+              auth:       this.dataForm.auth
+            })
             .then( () => {
               let that = this;
               let newProblems = this.dataForm.problems;
@@ -171,16 +189,19 @@ export default {
                     contest_id: that.dataForm.contest_id,
                     problem_id: newProblems[i].problemID,
                     problemtitle: newProblems[i].problemTitle,
-                    rank: i
+                    rank: i + 1
+                  })
+                  .then( () => {
+                    this.$message({
+                      message: '提交成功',
+                      type: 'success'
+                    });
                   })
                   .catch( error => {
                     this.$message.error('服务器错误(' + error + ')');
                   });
               }
-              this.$message({
-                message: '提交成功',
-                type: 'success'
-              });
+              
             })
             .catch( error => {
               this.$message.error('服务器错误(' + error + ')');
