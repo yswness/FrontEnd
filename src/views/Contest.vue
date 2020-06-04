@@ -15,7 +15,7 @@
               <el-button
                 class="contest-table-button"
                 type="text"
-                @click="handleClickTitle(scope.row.contest_id)">
+                @click="handleClickTitle(scope.row)">
                 {{ scope.row.title }}
               </el-button>
             </template>
@@ -34,7 +34,14 @@
             label="比赛注册"
             width="220px">
             <template slot-scope="scope">
-              <template v-if="!scope.row.isRegister">
+              <template v-if="scope.row.isEnd">
+                <el-button
+                  class="contest-register-button"
+                  type="danger">
+                  已结束
+                </el-button>
+              </template>
+              <template v-else-if="!scope.row.isRegister">
                 <el-button
                   class="contest-register-button"
                   type="primary"
@@ -85,6 +92,7 @@ export default {
   methods: {
     handleCurrentChange(val) {
       this.currentPage = val;
+      let that = this;
       this.$axios
         .get( 
           this.$globle.GLOBLE_BASEURL +
@@ -102,32 +110,40 @@ export default {
             contestData[i].start_time = 
               this.$moment(contestData[i].start_time).format('YYYY-MM-DD HH:mm:ss');
             
+            let during = this.$moment(new Date()).diff(this.$moment(contestData[i].end_time));
+            contestData[i].isEnd = (during > 0);
 
-            // 用户是否注册该比赛?
-            this.$axios
-              .get( 
-                this.$globle.GLOBLE_BASEURL + 
-                '/contestparticipant/?contest=' + contestData[i].contest_id +
-                '&user=' + window.sessionStorage.getItem('userName')
-              )
-              .then( response => {
-                contestData[i].isRegister = false;
-                if (response.data.length !== 0) {
-                  contestData[i].isRegister = true;
-                }
-                if (i === contestData.length - 1) {
-                  this.contestData = contestData;
-                }
-                //这个地方得注意,如果没有的话究竟返回了啥，这里直接用[]代替
-              })
           }
+
+          let promiseAll = contestData.map((item) => {
+            let postURL = this.$globle.GLOBLE_BASEURL + 
+                          '/contestparticipant/?contest=' + item.contest_id +
+                          '&user=' + window.sessionStorage.getItem('userName')
+            return that.$axios.get(postURL);
+          });
+          this.$axios.all(promiseAll).then(function (resArr) {
+            resArr.forEach( (res, i) => {
+            contestData[i].isRegister = false;
+              console.log(res);
+              if (res.data.length !== 0) {
+                console.log('I got it' + i);
+                contestData[i].isRegister = true;
+              }
+              if (i === contestData.length - 1) {
+                that.contestData = contestData;
+              }
+            })
+          });
         })
         .catch( error => {
           this.$message.error('服务器错误' + error);
         })
     },
     handleClickTitle(val) {
-      this.$router.push({ name: 'contestsubpage', params: { contestID: val }})
+      this.$router
+        .push({ name: 'contestsubpage', 
+                params: { contestID: val.contest_id },
+                query:  { isVisible: (val.isEnd == true || val.isRegister == true) }})
     },
     handleClickRegister(val) {
       this.$axios

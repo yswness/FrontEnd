@@ -2,47 +2,59 @@
   <div class="contestproblemlist">
     <el-row>
       <el-col :span="8" :offset="4">
-        <el-card class="box-card" :body-style="{padding: '0px'}">
-          <el-table
-            :data="problemData"
-            stripe
-            style="width: 100%"
-            :cell-style="cellStyle"
-            :header-cell-style="headerCellStyle">
-            <el-table-column
-              width="40px">
-            </el-table-column>
-            <el-table-column
-              prop="problem_id"
-              label="#"
-              width="50px">
-            </el-table-column>
-            <el-table-column
-              label="题目名称"
-              width="380px">
-              <template slot-scope="scope">
-                <router-link :to="{ name: 'contestproblem', params: { problemKey: scope.row.problem }}">
-                  {{ scope.row.title }}
-                </router-link>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="submission_number"
-              label="提交数"
-              width="68px">
-            </el-table-column>
-            <el-table-column
-              prop="acnum"
-              label="通过数"
-              width="68px">
-            </el-table-column>
-            <el-table-column
-              prop="acrate"
-              label="通过率"
-              width="78px">
-            </el-table-column>
-          </el-table>
-        </el-card>
+        <template v-if="isVisible">
+          <el-card class="box-card" :body-style="{padding: '0px'}">
+            <el-table
+              :data="problemData"
+              stripe
+              style="width: 100%"
+              :cell-style="cellStyle"
+              :header-cell-style="headerCellStyle">
+              <el-table-column
+                width="40px">
+              </el-table-column>
+              <el-table-column
+                prop="problem_id"
+                label="#"
+                width="50px">
+              </el-table-column>
+              <el-table-column
+                label="题目名称"
+                width="380px">
+                <template slot-scope="scope">
+                  <router-link :to="{ name: 'contestproblem', params: { problemKey: scope.row.problem }}">
+                    {{ scope.row.title }}
+                  </router-link>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="submission_number"
+                label="提交数"
+                width="68px">
+              </el-table-column>
+              <el-table-column
+                prop="acnum"
+                label="通过数"
+                width="68px">
+              </el-table-column>
+              <el-table-column
+                prop="acrate"
+                label="通过率"
+                width="78px">
+              </el-table-column>
+            </el-table>
+          </el-card>
+        </template>
+        <template>
+          <el-card class="box-card">
+            <span>比赛说明</span>
+            <ul>
+              <li>比赛状态: {{ contestStatus }}</li>
+              <li>比赛时间: {{ contestData.start_time }} 至 {{ contestData.end_time }}</li>
+              <li>比赛语言: C, C++, Java, Python2, Python3</li>
+            </ul>
+          </el-card>
+        </template>
       </el-col>
     </el-row>
   </div>
@@ -51,6 +63,10 @@
 export default {
   data() {
     return {
+      contestStatus: '',
+      isVisible: false,
+      isStart: false,
+      isEnd: false,
       contestID: 0,
       problemData: [{
         problem_id: 'A',
@@ -59,6 +75,10 @@ export default {
         submission_number: 8,
         acnum: 5,
         acrate: '6%'
+      }],
+      contestData: [{
+        start_time: '',
+        end_time: ''
       }]
     }
   },
@@ -135,9 +155,57 @@ export default {
   },
   created() {
     this.contestID = this.$route.params.contestID;
-    this.initProblemList();
+    this.$axios
+      .get( 
+        this.$globle.GLOBLE_BASEURL +
+        '/contest/' + this.contestID
+      )
+      .then( response => {
+        console.log(response);
+        this.contestData = response.data;
+        this.contestData.start_time = this.$moment(this.contestData.start_time).format('YYYY-MM-DD HH:mm:ss');
+        this.contestData.end_time = this.$moment(this.contestData.end_time).format('YYYY-MM-DD HH:mm:ss');
+        let nowToEnd = this.$moment(new Date()).diff(this.$moment(this.contestData.end_time));
+        let nowToStart = this.$moment(new Date()).diff(this.$moment(this.contestData.start_time));
+
+        if (nowToEnd > 0) {
+          this.isEnd = true;
+          this.contestStatus = '已结束';
+        }
+        else if (nowToStart > 0) {
+          this.isStart = true;
+          this.contestStatus = '比赛中'
+        } 
+        else {
+          let during = nowToStart / 1000 * -1;
+          this.contestStatus = '未开始, 距比赛开始还有: ' + parseInt(during / 3600) + ' 小时 '
+                                                      + (parseInt(during / 60) % 60) + ' 分钟 '
+                                                      + parseInt(during % 60) + ' 秒';
+
+        }
+        console.log(nowToEnd, nowToStart);
+
+        let that = this;
+        this.$axios
+          .get( 
+            that.$globle.GLOBLE_BASEURL + 
+            '/contestparticipant/?contest=' + that.contestID +
+            '&user=' + window.sessionStorage.getItem('userName')
+          )
+          .then( response2 => {
+            that.isRegister = response2.data.length !== 0;
+            if ((that.isRegister && that.isStart) || that.isEnd) {
+              that.isVisible = true;
+            }
+          })
+      })
+      .catch( error => {
+        this.$message.error('服务器错误' + error);
+      })
   },
   mounted() {
+
+    this.initProblemList();
     console.log(this.problemData);
   }
 }

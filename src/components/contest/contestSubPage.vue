@@ -29,7 +29,7 @@
               </router-link>
             </el-menu-item>
             <el-menu-item index="5">
-              <router-link :to="{ name: 'comment'}">
+              <router-link :to="{ name: 'comment'} ">
                 <div class="li-block">用户提问</div>
               </router-link>
             </el-menu-item>
@@ -46,6 +46,7 @@
 export default {
   data() {
     return {
+      isVisible: false,
       activeIndex: '1',
       contestID: 0
     }
@@ -57,6 +58,7 @@ export default {
   },
   created() {
     this.contestID = this.$route.params.contestID;
+    this.visible = this.$route.query.isVisible;
     switch (this.$route.name) {
       case 'contestsubpage': this.activeIndex = '1'; break;
       case 'mysubmission':   this.activeIndex = '2'; break;

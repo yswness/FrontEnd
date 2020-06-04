@@ -70,6 +70,8 @@ export default {
       .catch( error => {
         this.$message.error('服务器错误' + error);
       })
+    
+    
   }
 }
 </script>

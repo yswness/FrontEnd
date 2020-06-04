@@ -150,6 +150,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  console.log(from, to);
   if (  to.name !== 'Home' &&
         to.name !== 'Register' &&
         to.name !== 'Login' &&
@@ -157,7 +158,11 @@ router.beforeEach((to, from, next) => {
         to.name !== 'Rating' &&
         (!window.sessionStorage.getItem('userName')) &&
         (window.sessionStorage.getItem('userName') !== '') ) next({ name: 'Login' });
-  else next();
+  else if ( to.name === 'contestproblem' &&
+            from.name !== 'contestsubpage' ) next({ name: 'Contest' }); //必须从比赛界面跳转
+  else {
+    next();
+  }
 })
 
 export default router
