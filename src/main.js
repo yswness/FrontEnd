@@ -1,4 +1,4 @@
-import Vue from 'vue'
+﻿import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -39,7 +39,7 @@ import moment from 'moment'
 Vue.prototype.$moment = moment;
 
 /* mockjs 模拟数据 测试完及时删除 */
-//import './mockjs/mock';
+import './mockjs';
 
 
 /* debug */

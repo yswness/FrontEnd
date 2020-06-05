@@ -1,7 +1,7 @@
 <template>
   <div id="status">
     <el-row id="status-row">
-      <el-col id="status-col" :span="14" :offset="5">
+      <el-col id="status-col" :span="16" :offset="4">
         <el-table
           stripe
           :data="statusData"
@@ -23,8 +23,7 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="题目"
-            width="200px">
+            label="题目">
             <template slot-scope="scope">
               <el-button
                 size="small"
@@ -38,7 +37,8 @@
           <el-table-column
             label="状态"
             :filters="resultsFilter"
-            :filter-method="filterResult">
+            :filter-method="filterResult"
+            width="260px">
             <template slot-scope="scope">
               <el-button
                 plain

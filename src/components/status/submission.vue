@@ -63,7 +63,7 @@ export default {
   created() {
     this.statusID = this.$route.params.submissionID;
     this.$axios
-      .get( this.$globle.GLOBLE_BASEURL + '/getcode/' + this.statusID )
+      .get( this.$globle.GLOBLE_BASEURL + '/getcode/' + this.statusID + '/' )
       .then( (response) => {
         this.code = response.data.code;
       })

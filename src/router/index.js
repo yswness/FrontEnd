@@ -138,7 +138,37 @@ const routes = [
       {
         path: 'addcontest',
         name: 'adminaddcontest',
-        component: () => import(/* webpackChunkName: "mainPage" */ '../components/Admin/adminaddcontest.vue')
+        component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/adminaddcontest.vue')
+      },
+      {
+        path: 'usermanagement',
+        name: 'adminaddprivilege',
+        component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/adminaddprivilege.vue')
+      },
+      {
+        path: 'usermanage/:userID',
+        name: 'adminuserchange',
+        component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/adminuserchange.vue')
+      },
+      {
+        path: 'problemmagagement',
+        name: 'adminmodifyproblem',
+        component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/adminmodifyproblem.vue')
+      },
+      {
+        path: 'problemmagage/:problemID',
+        name: 'adminproblemchange',
+        component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/adminproblemchange.vue')
+      },
+      {
+        path: 'contestmagagement',
+        name: 'adminmodifycontest',
+        component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/adminmodifycontest.vue')
+      },
+      {
+        path: 'contestmagage/:contestID',
+        name: 'admincontestchange',
+        component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/admincontestchange.vue')
       }
     ]
   }
@@ -150,7 +180,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  console.log(from, to);
+  //console.log(from, to);
   if (  to.name !== 'Home' &&
         to.name !== 'Register' &&
         to.name !== 'Login' &&

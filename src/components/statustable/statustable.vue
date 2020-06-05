@@ -197,7 +197,7 @@ export default {
         '&result='  + this.propData.postResult +
         '&contest=' + this.propData.postContestID
       } else {
-        postURL += this.propData.postStatusID;
+        postURL += this.propData.postStatusID + '/';
       }
       this.$axios
         .get( postURL ) 

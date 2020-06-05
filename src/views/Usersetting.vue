@@ -24,10 +24,10 @@
         <el-form-item label="学号" prop="number">
           <el-input v-model="settingForm.number" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="qq">
+        <el-form-item label="qq" prop="qq">
           <el-input v-model="settingForm.qq" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱">
+        <el-form-item label="邮箱" prop="email">
           <el-input v-model="settingForm.email" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="旧密码" prop="oldPassword">
@@ -49,18 +49,7 @@
 </template>
 <script>
 export default {
-  name: "Login",
   data() {
-    var validateUser = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('用户名不能为空'));
-      } else {
-        if (/^[a-zA-Z0-9_\-@$%^]+$/.test(value) !== true) {
-          callback(new Error('用户名包含非法字符'));
-        }
-        callback();
-      }
-    };
     var validatePass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入密码'));
@@ -94,11 +83,6 @@ export default {
         qq: '',        
       },
       rules: {
-        username: [
-          { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 3, max: 64, message: '长度应在 3 到 64 之间', trigger: 'blur' },
-          { validator: validateUser, trigger: 'blur' }
-        ],
         name: [
           { required: true, message: '请输入昵称', trigger: 'blur' },
           { min: 1, max: 64, message: '长度应在 1 到 64 之间', trigger: 'blur' }
@@ -123,7 +107,11 @@ export default {
           { required: true, message: '请输入旧密码', trigger: 'blur' }
         ],
         email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
           { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+        ],
+        qq: [
+          { required: true, message: '请输入qq', trigger: 'blur' }
         ]
       }
     };
@@ -150,6 +138,7 @@ export default {
 
               this.$axios
                 .put( this.$globle.GLOBLE_BASEURL + '/userupdate/', {
+                  username: this.username,
                   name: this.settingForm.name,
                   password: pass,
                   email: this.settingForm.email,

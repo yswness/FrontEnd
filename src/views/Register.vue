@@ -33,7 +33,7 @@
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="ruleForm.email" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="qq">
+        <el-form-item label="qq" prop="qq">
           <el-input v-model="ruleForm.qq" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item class="register-form-item">
@@ -117,7 +117,11 @@ export default {
           { validator: validateCheckPass, trigger: 'blur' }
         ],
         email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
           { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+        ],
+        qq: [
+          { required: true, message: '请输入qq', trigger: 'blur' }
         ]
       }
     };

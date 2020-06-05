@@ -208,7 +208,7 @@ export default {
   },
   mounted() {
     this.$axios
-      .get( "/api/problemdetail/" + this.problemID + '/')
+      .get( this.$globle.GLOBLE_BASEURL + "/problemdetail/" + this.problemID + '/')
       .then( response => {
         console.log(response);
         this.title = response.data['title'];

@@ -22,6 +22,16 @@
               <div class="li-block">用户管理</div>
             </router-link>
           </el-menu-item>
+          <el-menu-item index="4">
+            <router-link :to="{ name: 'adminmodifyproblem'}">
+              <div class="li-block">题目管理</div>
+            </router-link>
+          </el-menu-item>
+          <el-menu-item index="5">
+            <router-link :to="{ name: 'adminmodifycontest'}">
+              <div class="li-block">比赛管理</div>
+            </router-link>
+          </el-menu-item>
         </el-menu>
       </el-col>
     </el-row>
@@ -33,7 +43,7 @@
 export default {
   data() {
     return {
-      activeIndex: '1'
+      activeIndex: '0'
     }
   },
   methods: {
@@ -43,8 +53,10 @@ export default {
   },
   created() {
     switch (this.$route.name) {
-      case 'adminaddproblem': this.activeIndex = '1'; break;
-      case 'adminaddcontest': this.activeIndex = '2'; break;
+      case 'adminaddproblem':    this.activeIndex = '1'; break;
+      case 'adminaddcontest':    this.activeIndex = '2'; break;
+      case 'adminaddprivilege':  this.activeIndex = '3'; break;
+      case 'adminmodifyproblem': this.activeIndex = '4'; break;
     }
   }
 }

@@ -1,14 +1,14 @@
 <template>
-  <div id="Rating">
-    <el-row id="rating-row">
-      <el-col id="rating-col" :span="12" :offset="6">
+  <div id="userTable">
+    <el-row id="user-row">
+      <el-col id="user-col" :span="12" :offset="6">
         <el-input
-          class="problem-input"
+          class="admin-user-input"
           type="text"
           maxlength="64"
           minlength="1"
-          placeholder="题目ID/题目名"
-          v-model="inputText"
+          placeholder="用户名/学号/班级"
+          v-model="searchText"
           @change="inputChange">
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
@@ -26,25 +26,21 @@
           <el-table-column
             label="用户ID">
             <template slot-scope="scope">
-              <router-link :to="{ name: 'User', params: { userID: scope.row.username } }"> 
-                <span :style="scope.row.style"> {{ scope.row.username }} </span>
-              </router-link>
+              {{ scope.row.username }}
             </template>
           </el-table-column>
           <el-table-column
-            prop="ac_number"
-            label="AC数量"
-            width="80px">
-          </el-table-column>
-          <el-table-column
-            label="Rating"
-            width="80px">
+            align="right"
+            width="160px">
             <template slot-scope="scope">
-              <span :style="scope.row.style"> {{ scope.row.rating }} </span>
+              <el-button
+                size="mini"
+                type="primary"
+                @click="handleEdit(scope.$index, scope.row)">设置</el-button>
             </template>
           </el-table-column>
         </el-table>
-        <div class="rating-block">
+        <div class="user-block">
           <el-pagination
             background
             @current-change="handleCurrentChange"
@@ -65,7 +61,7 @@ export default {
       currentPage: 1,
       pageSize: 40,
       totalUser: 0,
-      inputText: '',
+      searchText: '',
       ratingData: [
         // {rank: 1,
         // username: 'yswness',
@@ -81,7 +77,12 @@ export default {
   },
   methods: {
     inputChange() {
+      console.log(this.searchText);
       this.handleCurrentChange(1);
+    },
+    handleEdit(index, val) {
+      console.log(index, val);
+      this.$router.push({ name: 'adminuserchange', params: { userID: val.username } })
     },
     handleCurrentChange(val) {
       this.currentPage = val;
@@ -91,17 +92,12 @@ export default {
           "/user/" +
           "?limit=" + this.pageSize +
           "&offset=" + (this.currentPage - 1) * this.pageSize +
-          "&search=" + this.inputText
+          "&search=" + this.searchText
         )
         .then(response => {
           let preUserNumber = (this.currentPage - 1) * this.pageSize;
           for (let i = 0; i < response.data.results.length; i++) {
             response.data.results[i].rank = preUserNumber + i + 1;
-            response.data.results[i].style = {
-              'font-weight': 'bold',
-              'font-size': '14px',
-              'color': this.$globle.RATINGCOLOR(response.data.results[i].rating)
-            }
           }
           this.ratingData = response.data.results;
           this.count = response.data.count;
@@ -132,21 +128,25 @@ export default {
 }
 </script>
 <style scope>
-#rating-row {
+#user-row {
   position: relative;
   top: 20px;
 }
-#rating-col {
+#user-col {
   border: 1px solid #dcdfe6;
   border-radius: 4px;
 }
-.rating-block {
+.user-block {
   display: block;
   text-align: center;
   margin-top: 10px;
 }
-a {
-  text-decoration: none;
+.admin-user-input {
+  margin-top: 10px;
+  margin-left: 10px;
 }
-
+.admin-user-input input {
+  border-radius: 20px;
+  width: 200px;
+}
 </style>

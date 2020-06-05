@@ -93,48 +93,73 @@ export default {
       totalProblem: 0,
       inputText: '',
 
-      nowContestID: 0,
       problemData: [],
+      oldProblems: [],
+      problemHadDelete: false,
       dataForm: {
         contest_id: 0,
         creator_id: '',
-        title: '',
+        problemtitle: '',
         dateRange: [],
         problems: [],
         type: '',
         auth: ''
       },
       rules: {
-        title:      [ { required: true, message: '请输入题目标题', trigger: 'blur' } ],
-        creator_id: [ { required: true, message: '请输入创建人', trigger: 'blur' } ],
-        type:       [ { required: true, message: '请选择比赛类型', trigger: 'blur' } ],
-        auth:       [ { required: true, message: '请选择比赛权限', trigger: 'blur' } ],
-        dateRange:  [ { required: true, message: '请选择比赛时间', trigger: 'blur' } ]
+        title: [ { required: true, message: '请输入比赛标题', trigger: 'blur' } ],
+        creator_id:   [ { required: true, message: '请输入创建人', trigger: 'blur' } ],
+        type:         [ { required: true, message: '请选择比赛类型', trigger: 'blur' } ],
+        auth:         [ { required: true, message: '请选择比赛权限', trigger: 'blur' } ],
+        dateRange:    [ { required: true, message: '请选择比赛时间', trigger: 'blur' } ]
       },
       currentRow: null,
 
     }
   },
   created() {
+    console.log(this.$route.params.contestID);
+    this.nowContestID = this.$route.params.contestID;
+
     this.$axios
-      .get( this.$globle.GLOBLE_BASEURL + '/contest/?limit=1')
+      .get( this.$globle.GLOBLE_BASEURL + 
+        '/contestproblem/?contest=' + this.nowContestID
+      )
       .then( response => {
-        this.dataForm.contest_id = response.data.count + 1;
-        this.nowContestID = this.dataForm.contest_id;
+        response.data.forEach(item => {
+          this.oldProblems.push({
+            dataid: item.id
+          })
+        })
       })
-      .catch( error => {
-        this.$message.error('服务器错误' + error);
-      })
+      .catch(error => this.$message.error("服务器错误" + error));
   },
   methods: {
     selectProblem() {
-      this.dialogIsAble = true;
-      this.handlePageChange(1);
+      if (!this.problemHadDelete) {
+        let that = this;
+        this.$confirm('此操作将删除该比赛设置的所有题目, 确定修改?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          that.oldProblems.forEach( item => {
+            console.log(item);
+            that.$axios.delete(
+              that.$globle.GLOBLE_BASEURL + 
+              '/contestproblem/' + item.dataid + '/'
+            )
+            .then( () => {} )
+          })
+          that.problemHADdelete = true;
+          this.dialogIsAble = true;
+          this.handlePageChange(1);
+        })
+      }
     },
     handlePageChange(val) {
       this.currentPage = val;
       this.$axios
-        .get( this.$globle.GLOBLE_BASEURL + 
+        .get( this.$globle.GLOBLE_BASEURL +
           '/problem/?limit=' + this.pageSize +
           '&offset=' + ((this.currentPage - 1) * this.pageSize) +
           '&auth=' + window.sessionStorage.getItem('userType') +
@@ -153,9 +178,12 @@ export default {
     },
     handleCurrentChange(val) {
       if (!val) return;
+      this.addProblem(val);
+    },
+    addProblem(val) {
       this.dataForm.problems.push({
         problemID: val.problem_id,
-        problemTitle: val.title,
+        problemTitle: val.problemtitle,
         key: Date.now()
       })
       this.$refs.problemTable.setCurrentRow(null);
@@ -174,7 +202,7 @@ export default {
           this.dataForm.start_time = this.dataForm.dateRange[0].toISOString();
           this.dataForm.end_time = this.dataForm.dateRange[1].toISOString();
           this.$axios
-            .post( this.$globle.GLOBLE_BASEURL + '/contest/', {
+            .put( this.$globle.GLOBLE_BASEURL + '/contest/', {
               contest_id: this.dataForm.contest_id,
               creator:    this.dataForm.creator_id,
               title:      this.dataForm.title,
@@ -184,29 +212,10 @@ export default {
               auth:       this.dataForm.auth
             })
             .then( () => {
-              let that = this;
-              let newProblems = this.dataForm.problems;
-              let promiseAll = newProblems.map( item => { //先获得所有题总提交次数
-                return that.$axios.post( this.$globle.GLOBLE_BASEURL + /contestproblem/ , {
-                  contest: that.dataForm.contest_id,
-                  problem: item.problemID,
-                  problemtitle: item.problemTitle,
-                  rank: item.key + 1
-                })
-              })
-              this.$axios.all(promiseAll).then(() => {
-                that.$message({
-                  message: '提交成功',
-                  type: 'success'
-                });
-              })
-              .catch(error => {
-                that.$message.error('比赛题目提交失败' + error );
-              })
-              
+              this.$message.success('表单提交成功');
             })
             .catch( error => {
-              this.$message.error('服务器错误, 表单提交失败(' + error + ')');
+              this.$message.error('服务器错误(' + error + ')');
             })
         } else {
           console.log('error submit!!');
