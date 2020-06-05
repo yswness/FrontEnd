@@ -24,7 +24,7 @@ export default {
     }
   },
   created() {
-    this.problemID = this.$route.query.problemID.toString();
+    this.problemID = this.$route.params.problemID.toString();
   }
 }
 </script>

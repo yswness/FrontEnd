@@ -181,6 +181,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   //console.log(from, to);
+  let nowUserType = window.sessionStorage.getItem('userType');
   if (  to.name !== 'Home' &&
         to.name !== 'Register' &&
         to.name !== 'Login' &&
@@ -190,6 +191,7 @@ router.beforeEach((to, from, next) => {
         (window.sessionStorage.getItem('userName') !== '') ) next({ name: 'Login' });
   else if ( to.name === 'contestproblem' &&
             from.name !== 'contestsubpage' ) next({ name: 'Contest' }); //必须从比赛界面跳转
+  else if ( to.name === 'adminuserchange' && nowUserType != 'Super Admin' ) next({ name: 'adminaddprivilege' });
   else {
     next();
   }

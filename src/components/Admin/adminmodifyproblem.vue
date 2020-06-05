@@ -66,7 +66,6 @@ export default {
         .get( this.$globle.GLOBLE_BASEURL + 
           '/problem/?limit=' + this.pageSize +
           '&offset=' + ((this.currentPage - 1) * this.pageSize) +
-          '&auth=' + window.sessionStorage.getItem('userType') +
           '&search=' + this.inputText
         )
         .then( response => {

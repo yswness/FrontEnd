@@ -83,28 +83,12 @@ export default {
               window.sessionStorage.setItem("userType", response.data.type);
               window.sessionStorage.setItem("userRating", response.data.rating);
 
-              that.$axios
-                .post( that.$globle.GLOBLE_BASEURL + "/userlogindata/", {
-                  username: that.ruleForm.account,
-                  ip:       that.ruleForm.account,
-                  msg:      that.ruleForm.account
-                })
-                .then(() => {
-                  that.$message({
-                    message: '登录成功',
-                    type: 'success'
-                  });
-                  setTimeout(() => { that.$router.go(0); }, 500);
-                  that.$router.push({ name: 'Home' });
-                })
-                .catch(error => {
-                  that.$message.error(
-                    "服务器错误！" + "(" + error + ")"
-                  );
-                  window.sessionStorage.removeItem("userName");
-                  window.sessionStorage.removeItem("userType");
-                  window.sessionStorage.removeItem("userRating");
-                });
+              that.$message({
+                message: '登录成功',
+                type: 'success'
+              });
+              setTimeout(() => { that.$router.go(0); }, 500);
+              that.$router.push({ name: 'Home' });
             })
             .catch(error => {
               this.$message.error('登录失败:(' + error + ')'); //加原因

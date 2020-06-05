@@ -68,7 +68,7 @@
             size="small"
             class="status-table-button"
             type="text"
-            @click="handleClickProblem(scope.row.status_id)">
+            @click="handleClickStatus(scope.row.status_id)">
             {{ scope.row.language }}
           </el-button>
         </template>
@@ -199,6 +199,7 @@ export default {
       } else {
         postURL += this.propData.postStatusID + '/';
       }
+      console.log(postURL);
       this.$axios
         .get( postURL ) 
         .then(response => {
@@ -216,6 +217,7 @@ export default {
             response.data.results[i].title =
               response.data.results[i].problem.problem_id + 
               '. ' + response.data.results[i].problem.title
+            response.data.results[i].username = response.data.results[i].user.username;
             response.data.results[i].time = response.data.results[i].time + ' ms';
             response.data.results[i].memory = response.data.results[i].memory + ' KB';
             response.data.results[i].length = response.data.results[i].length + ' B';

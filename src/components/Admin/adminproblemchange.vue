@@ -163,7 +163,7 @@ export default {
       var li = name.split(".");
       this.fileList = fileList;
       if (li[1] != "zip") {
-        this.$message.error("数据文件名名不正确");
+        this.$message.error("数据文件后缀名不正确");
         this.fileList = [];
       }
     },
@@ -194,13 +194,13 @@ export default {
           let nowTime = new Date();
           nowTime = nowTime.toISOString();
           this.$axios
-            .put( this.$globle.GLOBLE_BASEURL + '/problem/' , {
+            .put( this.$globle.GLOBLE_BASEURL + '/problem/' + this.nowProblemID + '/' , {
               problem_id: this.nowProblemID,
               title: this.dataForm.title,
               level: this.dataForm.level,
               score: this.dataForm.score,
               auth: this.dataForm.auth,
-              addtime: nowTime
+              addtime: nowTime 
             })
             .then( () => {
               let postSinput = [];
@@ -209,8 +209,22 @@ export default {
                 postSinput.push(item.sinput);
                 postSoutput.push(item.soutput);
               }
+              console.log({
+                  problem: this.nowProblemID,
+                  title: this.dataForm.title,
+                  author: this.dataForm.author,
+                  problemdes: this.dataForm.description,
+                  input: this.dataForm.input,
+                  output: this.dataForm.output,
+                  sinput: JSON.stringify(postSinput),
+                  soutput: JSON.stringify(postSoutput),
+                  source: this.dataForm.source,
+                  time: this.dataForm.time,
+                  memory: this.dataForm.memory,
+                  hint: this.dataForm.hint
+                })
               this.$axios
-                .put( this.$globle.GLOBLE_BASEURL + '/problemdetail/', {
+                .put( this.$globle.GLOBLE_BASEURL + '/problemdetail/' + this.nowProblemID + '/', {
                   problem: this.nowProblemID,
                   title: this.dataForm.title,
                   author: this.dataForm.author,
@@ -232,6 +246,7 @@ export default {
                   })
                 })
                 .catch( error => {
+                  console.log(error);
                   this.$message.error('服务器错误' + error);
                 })
 

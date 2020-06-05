@@ -82,7 +82,10 @@ export default {
     },
     handleEdit(index, val) {
       console.log(index, val);
-      this.$router.push({ name: 'adminuserchange', params: { userID: val.username } })
+      if (window.sessionStorage.getItem('userType') === 'Super Admin')
+        this.$router.push({ name: 'adminuserchange', params: { userID: val.username } });
+      else 
+        this.$message.error('操作失败,只有超级管理员才能修改用户数据');
     },
     handleCurrentChange(val) {
       this.currentPage = val;

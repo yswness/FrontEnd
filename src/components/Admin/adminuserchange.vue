@@ -92,7 +92,7 @@ export default {
               putData[item] = this.settingForm[item];
           }
           if (this.settingForm.password !== '') {
-            putData.pass = this.$md5(this.settingForm.password);
+            putData.password = this.$md5(this.settingForm.password);
           }
           this.$axios
             .put( this.$globle.GLOBLE_BASEURL + '/adminupdate/', putData )
@@ -114,7 +114,7 @@ export default {
     }
   },
   created() {
-    this.username = window.sessionStorage.getItem('userName');
+    this.username = this.$route.params.userID;
   }
 }
 </script>

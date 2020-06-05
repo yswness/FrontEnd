@@ -71,7 +71,7 @@
               v-for="(problem, index) in dataForm.problems"
               :label="'Problem ' + String.fromCharCode('A'.charCodeAt() + index)"
               :key="problem.key">
-              <el-button>{{ 'P ' + '1000' }}</el-button>
+              <el-button>{{ 'P ' + dataForm.problems[index].problemID }}</el-button>
               <el-button class="admin-addcon-button" @click.prevent="deleteProblem(problem)">删除</el-button>
             </el-form-item>
             <el-form-item>
@@ -137,7 +137,6 @@ export default {
         .get( this.$globle.GLOBLE_BASEURL + 
           '/problem/?limit=' + this.pageSize +
           '&offset=' + ((this.currentPage - 1) * this.pageSize) +
-          '&auth=' + window.sessionStorage.getItem('userType') +
           '&search=' + this.inputText
         )
         .then( response => {
@@ -186,12 +185,13 @@ export default {
             .then( () => {
               let that = this;
               let newProblems = this.dataForm.problems;
-              let promiseAll = newProblems.map( item => { //先获得所有题总提交次数
+              let promiseAll = newProblems.map( (item, index) => { //先获得所有题总提交次数
+                console.log(that.dataForm.contest_id, item.problemID, item.problemTitle, index + 1);
                 return that.$axios.post( this.$globle.GLOBLE_BASEURL + /contestproblem/ , {
                   contest: that.dataForm.contest_id,
                   problem: item.problemID,
                   problemtitle: item.problemTitle,
-                  rank: item.key + 1
+                  rank: index + 1
                 })
               })
               this.$axios.all(promiseAll).then(() => {

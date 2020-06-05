@@ -22,7 +22,7 @@ export default {
     }
   },
   created() {
-    this.contestID = this.$route.query.contestID;
+    this.contestID = this.$route.params.contestID;
   }
 }
 </script>

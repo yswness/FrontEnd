@@ -20,11 +20,11 @@ export default {
   data() {
     return {
       problemID: '',
-      result: 'Accepted'
+      result: '0'
     }
   },
   created() {
-    this.problemID = (this.$route.query.problemID).toString();
+    this.problemID = (this.$route.params.problemID).toString();
   }
 }
 </script>

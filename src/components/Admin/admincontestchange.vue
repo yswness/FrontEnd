@@ -71,7 +71,7 @@
               v-for="(problem, index) in dataForm.problems"
               :label="'Problem ' + String.fromCharCode('A'.charCodeAt() + index)"
               :key="problem.key">
-              <el-button>{{ 'P ' + '1000' }}</el-button>
+              <el-button>{{ 'P ' + dataForm.problems[index].problemID }}</el-button>
               <el-button class="admin-addcon-button" @click.prevent="deleteProblem(problem)">删除</el-button>
             </el-form-item>
             <el-form-item>
@@ -99,7 +99,7 @@ export default {
       dataForm: {
         contest_id: 0,
         creator_id: '',
-        problemtitle: '',
+        title: '',
         dateRange: [],
         problems: [],
         type: '',
@@ -119,6 +119,7 @@ export default {
   created() {
     console.log(this.$route.params.contestID);
     this.nowContestID = this.$route.params.contestID;
+    this.dataForm.contest_id = this.nowContestID;
 
     this.$axios
       .get( this.$globle.GLOBLE_BASEURL + 
@@ -150,10 +151,13 @@ export default {
             )
             .then( () => {} )
           })
-          that.problemHADdelete = true;
+          that.problemHadDelete = true;
           this.dialogIsAble = true;
           this.handlePageChange(1);
         })
+      } else {
+        this.dialogIsAble = true;
+        this.handlePageChange(1);
       }
     },
     handlePageChange(val) {
@@ -162,7 +166,6 @@ export default {
         .get( this.$globle.GLOBLE_BASEURL +
           '/problem/?limit=' + this.pageSize +
           '&offset=' + ((this.currentPage - 1) * this.pageSize) +
-          '&auth=' + window.sessionStorage.getItem('userType') +
           '&search=' + this.inputText
         )
         .then( response => {
@@ -183,9 +186,10 @@ export default {
     addProblem(val) {
       this.dataForm.problems.push({
         problemID: val.problem_id,
-        problemTitle: val.problemtitle,
+        problemTitle: val.title,
         key: Date.now()
       })
+      console.log(val.problemtitle);
       this.$refs.problemTable.setCurrentRow(null);
       this.dialogIsAble = false;
     },
@@ -201,8 +205,17 @@ export default {
           this.dataForm.create_time = parseInt((this.dataForm.dateRange[1] - this.dataForm.dateRange[0]) / 1000);
           this.dataForm.start_time = this.dataForm.dateRange[0].toISOString();
           this.dataForm.end_time = this.dataForm.dateRange[1].toISOString();
+          console.log(JSON.stringify({
+              contest_id:    this.dataForm.contest_id,
+              creator:    this.dataForm.creator_id,
+              title:      this.dataForm.title,
+              start_time: this.dataForm.dateRange[0],
+              end_time:   this.dataForm.dateRange[1],
+              type:       this.dataForm.type,
+              auth:       this.dataForm.auth
+            }));
           this.$axios
-            .put( this.$globle.GLOBLE_BASEURL + '/contest/', {
+            .put( this.$globle.GLOBLE_BASEURL + '/contest/' + this.dataForm.contest_id + '/', {
               contest_id: this.dataForm.contest_id,
               creator:    this.dataForm.creator_id,
               title:      this.dataForm.title,
@@ -212,7 +225,32 @@ export default {
               auth:       this.dataForm.auth
             })
             .then( () => {
-              this.$message.success('表单提交成功');
+              let that = this;
+              let newProblems = this.dataForm.problems;
+              
+              let promiseAll = newProblems.map( (item, index) => {
+                console.log(JSON.stringify({
+                  contest: that.dataForm.contest_id,
+                  problem: item.problemID,
+                  problemtitle: item.problemTitle,
+                  rank: index + 1
+                }));
+                return that.$axios.post( this.$globle.GLOBLE_BASEURL + /contestproblem/ , {
+                  contest: that.dataForm.contest_id,
+                  problem: item.problemID,
+                  problemtitle: item.problemTitle,
+                  rank: index + 1
+                })
+              })
+              this.$axios.all(promiseAll).then(() => {
+                that.$message({
+                  message: '提交成功',
+                  type: 'success'
+                });
+              })
+              .catch(error => {
+                that.$message.error('比赛题目提交失败' + error );
+              })
             })
             .catch( error => {
               this.$message.error('服务器错误(' + error + ')');

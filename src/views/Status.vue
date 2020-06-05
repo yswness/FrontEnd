@@ -17,8 +17,8 @@
                 size="small"
                 class="status-table-button"
                 type="text"
-                @click="handleClickStatus(scope.row.id)">
-                {{ scope.row.id }}
+                @click="handleClickStatus(scope.row.status_id)">
+                {{ scope.row.status_id }}
               </el-button>
             </template>
           </el-table-column>
@@ -45,7 +45,7 @@
                 size="small"
                 class="status-result-button"
                 :type="changeType(scope.row.result)"
-                @click="handleClickStatus(scope.row.id)">
+                @click="handleClickStatus(scope.row.status_id)">
                 <i v-if="hasLoading(scope.row.result)" class="el-icon-loading"></i>
                 {{ scope.row.result }}
               </el-button>
@@ -69,7 +69,7 @@
                 size="small"
                 class="status-table-button"
                 type="text"
-                @click="handleClickProblem(scope.row.statusID)">
+                @click="handleClickStatus(scope.row.status_id)">
                 {{ scope.row.language }}
               </el-button>
             </template>
@@ -189,6 +189,7 @@ export default {
             response.data.results[i].title =
               response.data.results[i].problem.problem_id + 
               '. ' + response.data.results[i].problem.title
+            response.data.results[i].username = response.data.results[i].user.username;
             response.data.results[i].time = response.data.results[i].time + ' ms';
             response.data.results[i].memory = response.data.results[i].memory + ' KB';
             response.data.results[i].length = response.data.results[i].length + ' B';
