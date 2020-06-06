@@ -107,6 +107,7 @@ export default {
   data() {
     return {
       problemID: 1,
+      contestID: 1,
       contest: '',
       title: 'A + B',
       time: 0,
@@ -179,7 +180,8 @@ export default {
           user: userName,
           code: this.code,
           language: this.langValue,
-          length: postCodeLength
+          length: postCodeLength,
+          contest: this.contestID
         })
         .then(() => {
           this.$message({
@@ -227,6 +229,7 @@ export default {
   },
   created() {
     this.problemID = this.$route.params.problemKey;
+    this.contestID = this.$route.params.contestID;
     //require('ip');
     
   }
